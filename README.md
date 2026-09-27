@@ -24,14 +24,14 @@ The prepare script converts the Excel workbook (both sheets) into one CSV, `data
 
 ## Rerun the analysis (from `day-3` on)
 
-With the venv active, run the scripts in this order. Each one writes into `outputs/`.
+With the venv active, run the scripts in this order. The first four write into `outputs/`; `review_recheck.py` only prints its numbers. A rerun replaces the analyst notes in the data-quality report and updates the `generated` time in the MBR `metrics.json`.
 
 ```bash
-python scripts/data_quality.py        # data checks -> outputs/data_quality_report.md
+python scripts/data_quality.py        # data checks -> outputs/data_quality_report.md and data_quality_checks.json
 python scripts/retail_analysis.py     # business analysis -> outputs/analysis/
 python scripts/customer_analysis.py   # customer analysis (day-4 on) -> outputs/customers/
-python scripts/mbr_analysis.py        # monthly business review (day-5); add --month YYYY-MM for another month
-python scripts/review_recheck.py      # reviewer's recheck of headline numbers (day-4 on)
+python scripts/mbr_analysis.py        # monthly business review (day-5) -> outputs/mbr_2011_12/; --month YYYY-MM for another month
+python scripts/review_recheck.py      # reviewer's recheck of headline numbers, printed only (day-4 on)
 ```
 
 On Windows without an active venv, call the venv's Python directly, e.g. `.venv\Scripts\python.exe scripts\data_quality.py`.

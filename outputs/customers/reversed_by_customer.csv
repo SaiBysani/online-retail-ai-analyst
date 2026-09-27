@@ -1,0 +1,298 @@
+Customer ID,country,monetary,reversed_value,monetary_excl_reversed,value_rank,segment,in_top20_gross,in_top20_excl_reversed
+16446,United Kingdom,168472.5000,168469.6000,2.9000,8,Big spenders,True,False
+12346,United Kingdom,77352.9600,77183.6000,169.3600,19,At risk,True,False
+15098,United Kingdom,39916.5000,39267.0000,649.5000,40,Big spenders,True,False
+12931,United Kingdom,92347.3400,12147.4200,80199.9200,16,Champions,True,True
+17450,United Kingdom,244944.2500,10150.4400,234793.8100,5,Champions,True,True
+16754,United Kingdom,65500.0700,8391.4400,57108.6300,23,Can't lose,True,True
+14911,EIRE,272393.0300,8132.8800,264260.1500,4,Champions,True,True
+14607,United Kingdom,22589.6300,6804.0800,15785.5500,80,Champions,True,True
+13734,United Kingdom,6701.6400,5941.5000,760.1400,440,At risk,True,False
+17511,United Kingdom,172132.8700,4296.0000,167836.8700,7,Champions,True,True
+14028,United Kingdom,10396.5000,3610.5000,6786.0000,239,At risk,True,True
+15482,United Kingdom,14552.5600,3600.6400,10951.9200,149,Champions,True,True
+16029,United Kingdom,109794.8700,3487.2000,106307.6700,14,Champions,True,True
+17949,United Kingdom,107833.4800,3069.9600,104763.5200,15,Champions,True,True
+16684,United Kingdom,147142.7700,3013.0000,144129.7700,9,Champions,True,True
+15769,United Kingdom,88612.5200,2924.0000,85688.5200,18,Champions,True,True
+14031,United Kingdom,39099.1000,2586.0000,36513.1000,42,Champions,True,True
+16013,United Kingdom,56384.4400,2223.0000,54161.4400,28,Champions,True,True
+12748,United Kingdom,50235.1400,2030.5300,48204.6100,33,Champions,True,True
+13680,United Kingdom,11435.6700,1520.1100,9915.5600,216,Champions,True,True
+14045,United Kingdom,10986.6300,1339.6000,9647.0300,230,Loyal,True,True
+15514,United Kingdom,6594.7700,1316.9900,5277.7800,451,Champions,True,True
+18102,United Kingdom,580987.0400,1282.4000,579704.6400,1,Champions,True,True
+15546,United Kingdom,1079.1000,1079.1000,0.0000,2546,At risk,False,False
+13694,United Kingdom,195640.6900,963.0000,194677.6900,6,Champions,True,True
+14933,Channel Islands,1770.0000,885.0000,885.0000,1793,At risk,False,False
+16938,United Kingdom,7043.1800,833.2500,6209.9300,415,Champions,True,True
+13069,United Kingdom,9350.6300,640.9500,8709.6800,291,Champions,True,True
+12901,United Kingdom,17654.5400,612.0000,17042.5400,108,Champions,True,True
+14665,United Kingdom,2749.6500,559.5200,2190.1300,1236,Loyal,False,False
+13634,United Kingdom,5027.7800,553.9200,4473.8600,629,Champions,True,True
+12921,United Kingdom,35233.2400,534.7000,34698.5400,45,Champions,True,True
+12589,France,3294.9100,501.4900,2793.4200,1024,Champions,True,False
+15032,United Kingdom,11010.0500,495.0000,10515.0500,229,Can't lose,True,True
+17838,United Kingdom,5787.3400,466.6000,5320.7400,532,Champions,True,True
+16660,United Kingdom,1879.5500,457.2000,1422.3500,1700,Champions,False,False
+15311,United Kingdom,114852.0900,430.9900,114421.1000,12,Champions,True,True
+15073,United Kingdom,2788.0200,430.9800,2357.0400,1218,Champions,False,False
+13802,United Kingdom,26259.1100,420.0000,25839.1100,67,Loyal,True,True
+12657,France,1427.1800,419.1200,1008.0600,2093,Loyal,False,False
+15473,United Kingdom,2046.0000,408.0000,1638.0000,1594,Champions,False,False
+12457,Switzerland,2555.9100,375.3500,2180.5600,1318,Loyal,False,False
+16019,United Kingdom,17465.8500,373.6800,17092.1700,113,Champions,True,True
+17314,United Kingdom,4904.4300,360.4700,4543.9600,641,Champions,True,True
+17550,United Kingdom,2547.6400,341.1000,2206.5400,1320,Can't lose,False,False
+14970,United Kingdom,4919.3500,340.0000,4579.3500,639,Loyal,True,True
+14680,United Kingdom,55731.8900,337.0500,55394.8400,29,Champions,True,True
+14776,United Kingdom,3708.3000,330.2400,3378.0600,899,Champions,True,True
+16735,United Kingdom,6270.5600,327.9300,5942.6300,482,Loyal,True,True
+14159,United Kingdom,7926.7900,304.5000,7622.2900,368,Champions,True,True
+15223,United Kingdom,1417.9500,300.8500,1117.1000,2109,Can't lose,False,False
+16985,United Kingdom,10923.1600,295.0000,10628.1600,231,Champions,True,True
+17107,United Kingdom,16075.4200,290.0000,15785.4200,133,Champions,True,True
+14156,EIRE,303256.4300,290.0000,302966.4300,3,Champions,True,True
+12567,France,10741.4800,286.3400,10455.1400,234,Champions,True,True
+13526,United Kingdom,1182.0000,264.6000,917.4000,2392,At risk,False,False
+16993,United Kingdom,1950.9500,262.8000,1688.1500,1652,At risk,False,False
+16714,United Kingdom,1514.8000,250.0000,1264.8000,2016,At risk,False,False
+16359,United Kingdom,2697.7500,250.0000,2447.7500,1252,Champions,False,False
+12989,United Kingdom,13551.7500,248.4000,13303.3500,165,Champions,True,True
+17888,United Kingdom,1820.4400,243.7600,1576.6800,1749,Champions,False,False
+13798,United Kingdom,75428.8700,243.3600,75185.5100,20,Champions,True,True
+13473,United Kingdom,2657.7600,241.6800,2416.0800,1262,Loyal,False,False
+17404,Sweden,47638.1200,238.0000,47400.1200,36,Champions,True,True
+12971,United Kingdom,15704.6000,220.1500,15484.4500,138,Champions,True,True
+15502,United Kingdom,9603.1200,218.2000,9384.9200,280,Champions,True,True
+16321,Australia,604.5500,217.9500,386.6000,3517,Loyal,False,False
+12409,Switzerland,23419.2900,211.2000,23208.0900,78,Loyal,True,True
+15521,United Kingdom,7096.0900,209.8000,6886.2900,412,Champions,True,True
+15550,United Kingdom,2218.8000,209.7000,2009.1000,1479,Champions,False,False
+14882,United Kingdom,3628.1500,201.6000,3426.5500,919,Champions,True,True
+17873,United Kingdom,6171.3500,191.5200,5979.8300,493,Loyal,True,True
+12755,Japan,5236.2600,186.3600,5049.9000,606,Can't lose,True,True
+14800,United Kingdom,7207.2300,185.9500,7021.2800,405,Champions,True,True
+15498,United Kingdom,25062.8600,180.0000,24882.8600,73,Champions,True,True
+17865,United Kingdom,26372.2900,177.6000,26194.6900,65,Champions,True,True
+14727,United Kingdom,465.2300,176.0000,289.2300,3898,Hibernating,False,False
+15093,United Kingdom,13702.3800,175.2000,13527.1800,164,Champions,True,True
+14154,United Kingdom,6460.7000,175.2000,6285.5000,463,Can't lose,True,True
+12779,Poland,6474.1100,168.6000,6305.5100,461,Champions,True,True
+14849,United Kingdom,15407.6100,165.6000,15242.0100,142,Champions,True,True
+15158,United Kingdom,606.0200,165.0000,441.0200,3511,Need attention,False,False
+15861,United Kingdom,4393.4900,165.0000,4228.4900,737,Champions,True,True
+12843,United Kingdom,6466.9200,163.0000,6303.9200,462,Loyal,True,True
+14598,United Kingdom,384.0400,162.0700,221.9700,4197,Need attention,False,False
+16401,United Kingdom,6847.4500,159.7300,6687.7200,426,Champions,True,True
+12415,Australia,144033.3700,158.6500,143874.7200,10,Champions,True,True
+14010,United Kingdom,445.1500,157.0500,288.1000,3954,Hibernating,False,False
+14562,United Kingdom,6729.4000,156.5500,6572.8500,435,Champions,True,True
+18024,United Kingdom,389.7800,153.0000,236.7800,4165,Need attention,False,False
+15061,United Kingdom,126387.5700,152.6400,126234.9300,11,Champions,True,True
+15039,United Kingdom,39419.9200,151.7900,39268.1300,41,Champions,True,True
+14409,United Kingdom,3427.2900,151.2000,3276.0900,980,Loyal,True,True
+14878,United Kingdom,4105.2400,142.2000,3963.0400,800,Champions,True,True
+16544,United Kingdom,376.7000,141.6000,235.1000,4232,Hibernating,False,False
+14685,United Kingdom,4619.7900,141.6000,4478.1900,688,Can't lose,True,True
+18018,United Kingdom,297.9900,141.3000,156.6900,4638,Loyal,False,False
+14034,United Kingdom,651.8200,139.8000,512.0200,3403,Need attention,False,False
+15339,United Kingdom,1827.8400,135.0000,1692.8400,1735,Loyal,False,False
+17576,United Kingdom,8930.8100,127.0500,8803.7600,307,Champions,True,True
+12773,Portugal,124.2500,124.2500,0.0000,5505,Hibernating,False,False
+15581,United Kingdom,4547.0100,122.9000,4424.1100,707,Loyal,True,True
+17464,United Kingdom,1000.9400,121.2000,879.7400,2676,Loyal,False,False
+13415,United Kingdom,800.6700,118.7500,681.9200,3046,At risk,False,False
+15809,United Kingdom,1274.4400,116.5600,1157.8800,2262,Champions,False,False
+12471,Germany,35145.5000,108.0000,35037.5000,46,Champions,True,True
+13599,United Kingdom,9814.7900,100.7500,9714.0400,269,Champions,True,True
+17841,United Kingdom,69317.2100,100.2000,69217.0100,22,Champions,True,True
+14064,United Kingdom,3332.4200,99.6000,3232.8200,1008,Champions,True,True
+14404,United Kingdom,2765.6300,99.0000,2666.6300,1232,Champions,False,False
+17975,United Kingdom,6711.4300,95.2000,6616.2300,437,Champions,True,True
+13577,United Kingdom,3484.2800,94.8600,3389.4200,960,Champions,True,True
+14502,United Kingdom,2467.6300,94.5000,2373.1300,1349,Champions,False,False
+13676,United Kingdom,243.9000,90.7500,153.1500,4843,Hibernating,False,False
+12414,Austria,532.4100,90.0000,442.4100,3718,At risk,False,False
+17214,United Kingdom,1069.1200,85.0000,984.1200,2562,Loyal,False,False
+16658,United Kingdom,680.8300,84.8000,596.0300,3326,At risk,False,False
+16775,United Kingdom,2824.9900,81.6000,2743.3900,1201,Champions,False,False
+14049,United Kingdom,13239.0300,81.0000,13158.0300,170,Champions,True,True
+15555,United Kingdom,11283.4400,80.5000,11202.9400,221,Champions,True,True
+15621,United Kingdom,1293.0300,78.9600,1214.0700,2239,Loyal,False,False
+16897,United Kingdom,289.7800,76.7500,213.0300,4671,Hibernating,False,False
+13929,United Kingdom,3494.1000,76.5000,3417.6000,958,Loyal,True,True
+13413,United Kingdom,429.4400,76.3200,353.1200,4007,At risk,False,False
+16027,United Kingdom,2048.3600,76.3200,1972.0400,1589,Loyal,False,False
+17675,United Kingdom,37642.4800,75.6000,37566.8800,43,Champions,True,True
+17857,United Kingdom,25769.5400,72.5000,25697.0400,68,Champions,True,True
+15558,United Kingdom,214.1300,70.8000,143.3300,4999,Hibernating,False,False
+12439,Cyprus,1158.1800,69.0000,1089.1800,2429,At risk,False,False
+15518,United Kingdom,4218.9400,68.4000,4150.5400,782,Loyal,True,True
+17809,United Kingdom,10085.8900,66.0000,10019.8900,252,Champions,True,True
+17811,United Kingdom,9603.1000,65.4000,9537.7000,281,Champions,True,True
+15881,United Kingdom,501.3900,63.1500,438.2400,3791,At risk,False,False
+14126,United Kingdom,1172.4600,62.5000,1109.9600,2405,Loyal,False,False
+14367,United Kingdom,9261.5200,61.9500,9199.5700,295,Champions,True,True
+15255,United Kingdom,3729.4200,61.6500,3667.7700,893,Loyal,True,True
+16076,United Kingdom,2234.7300,61.2000,2173.5300,1473,Champions,False,False
+13184,United Kingdom,1700.2900,60.0000,1640.2900,1857,Champions,False,False
+15602,United Kingdom,3137.9600,60.0000,3077.9600,1082,Champions,True,True
+15691,United Kingdom,571.3000,59.5000,511.8000,3594,At risk,False,False
+13118,United Kingdom,2415.4100,59.4000,2356.0100,1376,Champions,False,False
+13448,United Kingdom,8437.2000,54.9500,8382.2500,336,Champions,True,True
+15877,United Kingdom,493.2800,52.5000,440.7800,3823,Need attention,False,False
+15827,United Kingdom,3603.1400,52.2000,3550.9400,931,Loyal,True,True
+15816,United Kingdom,144.1500,50.8500,93.3000,5386,Hibernating,False,False
+14895,United Kingdom,25119.5400,50.8500,25068.6900,72,Champions,True,True
+14725,United Kingdom,1309.3600,50.4000,1258.9600,2215,Loyal,False,False
+17696,United Kingdom,7679.5900,50.0000,7629.5900,384,Champions,True,True
+17368,United Kingdom,2826.1400,49.7500,2776.3900,1200,Champions,False,False
+15271,United Kingdom,4597.7900,49.0000,4548.7900,695,Champions,True,True
+15737,United Kingdom,1205.1200,49.0000,1156.1200,2353,Loyal,False,False
+17114,United Kingdom,808.6200,45.5000,763.1200,3037,Loyal,False,False
+14437,United Kingdom,895.8400,45.0000,850.8400,2873,At risk,False,False
+17027,United Kingdom,1327.1100,41.7000,1285.4100,2199,Loyal,False,False
+18139,United Kingdom,8438.3400,40.3200,8398.0200,335,Big spenders,True,True
+14298,United Kingdom,91194.4900,40.3200,91154.1700,17,Champions,True,True
+17921,United Kingdom,2423.5000,40.1500,2383.3500,1370,Loyal,False,False
+14080,United Kingdom,1115.6800,39.9500,1075.7300,2493,Loyal,False,False
+13066,United Kingdom,470.8000,39.9000,430.9000,3876,Need attention,False,False
+13005,United Kingdom,999.6800,39.8000,959.8800,2680,Loyal,False,False
+14978,United Kingdom,3142.1400,39.8000,3102.3400,1079,Loyal,True,True
+15660,United Kingdom,2603.6900,39.6000,2564.0900,1287,Champions,False,False
+15296,United Kingdom,10342.8300,39.6000,10303.2300,241,Champions,True,True
+12747,United Kingdom,8917.9800,39.0000,8878.9800,308,Champions,True,True
+13590,United Kingdom,6349.5900,38.7000,6310.8900,474,Champions,True,True
+14994,United Kingdom,956.6800,38.2300,918.4500,2743,At risk,False,False
+12979,United Arab Emirates,517.7000,38.1600,479.5400,3751,Hibernating,False,False
+14828,United Kingdom,9839.4600,36.0000,9803.4600,268,Can't lose,True,True
+16033,United Kingdom,10680.4900,35.7000,10644.7900,235,Champions,True,True
+15579,United Kingdom,1302.5000,35.2500,1267.2500,2226,Loyal,False,False
+18110,United Kingdom,435.4300,34.8000,400.6300,3987,Need attention,False,False
+17799,United Kingdom,6341.8900,34.7500,6307.1400,475,Champions,True,True
+15493,United Kingdom,4306.4900,34.5500,4271.9400,755,Champions,True,True
+13767,United Kingdom,33903.5700,32.4500,33871.1200,49,Champions,True,True
+17754,United Kingdom,4577.5300,31.2000,4546.3300,699,Champions,True,True
+17377,United Kingdom,17726.0700,30.7000,17695.3700,107,Champions,True,True
+18020,United Kingdom,190.4800,30.6000,159.8800,5114,Hibernating,False,False
+17935,United Kingdom,683.2400,30.6000,652.6400,3318,Loyal,False,False
+17524,United Kingdom,539.1400,30.2400,508.9000,3696,Hibernating,False,False
+14087,United Kingdom,846.2200,30.0000,816.2200,2951,Loyal,False,False
+15880,United Kingdom,343.2800,30.0000,313.2800,4384,Hibernating,False,False
+16202,United Kingdom,2501.9900,30.0000,2471.9900,1332,Can't lose,False,False
+17360,United Kingdom,1231.3800,29.9500,1201.4300,2322,Champions,False,False
+17350,United Kingdom,1906.0400,29.8800,1876.1600,1680,Champions,False,False
+12525,France,883.7300,29.8500,853.8800,2888,At risk,False,False
+18109,United Kingdom,9616.5100,29.8500,9586.6600,278,Champions,True,True
+15525,United Kingdom,979.2700,29.8000,949.4700,2707,Loyal,False,False
+16699,United Kingdom,994.6000,29.7000,964.9000,2686,At risk,False,False
+13121,United Kingdom,283.7300,29.0000,254.7300,4694,Hibernating,False,False
+16919,United Kingdom,4927.5600,28.6500,4898.9100,637,Loyal,True,True
+18177,United Kingdom,2216.8700,27.2500,2189.6200,1481,Champions,False,False
+15888,United Kingdom,423.4900,27.0400,396.4500,4029,Loyal,False,False
+13497,United Kingdom,1166.8300,27.0000,1139.8300,2411,At risk,False,False
+15551,United Kingdom,1710.0800,27.0000,1683.0800,1842,Champions,False,False
+16108,United Kingdom,2235.9200,26.4000,2209.5200,1472,Loyal,False,False
+17894,United Kingdom,2346.1900,25.8700,2320.3200,1409,Loyal,False,False
+14081,United Kingdom,4946.5800,25.5000,4921.0800,636,Can't lose,True,True
+16770,United Kingdom,1801.3300,25.2000,1776.1300,1763,Champions,False,False
+17613,United Kingdom,4559.1500,25.0000,4534.1500,703,Champions,True,True
+13584,United Kingdom,392.4500,24.3000,368.1500,4153,At risk,False,False
+13527,United Kingdom,4683.7400,23.7500,4659.9900,679,Champions,True,True
+13821,United Kingdom,1410.7300,23.7000,1387.0300,2117,Loyal,False,False
+14102,United Kingdom,1360.2800,23.4000,1336.8800,2165,Champions,False,False
+15542,United Kingdom,918.4500,22.5500,895.9000,2826,At risk,False,False
+17802,United Kingdom,4952.9200,22.5000,4930.4200,634,Loyal,True,True
+18041,United Kingdom,8118.0900,22.2500,8095.8400,358,Champions,True,True
+15658,United Kingdom,2117.2700,21.2500,2096.0200,1539,Can't lose,False,False
+15882,United Kingdom,1122.3800,21.0000,1101.3800,2482,At risk,False,False
+17068,United Kingdom,8987.4300,20.8000,8966.6300,304,Champions,True,True
+16563,United Kingdom,4422.7600,20.4000,4402.3600,731,Champions,True,True
+17346,United Kingdom,5169.1900,20.2800,5148.9100,616,Champions,True,True
+17757,United Kingdom,9126.0500,20.1600,9105.8900,297,Champions,True,True
+16463,United Kingdom,1422.4000,20.0000,1402.4000,2103,Champions,False,False
+17979,United Kingdom,754.3100,19.9000,734.4100,3167,Loyal,False,False
+15291,United Kingdom,13472.7600,19.8000,13452.9600,166,Champions,True,True
+14606,United Kingdom,29951.5600,19.6500,29931.9100,56,Champions,True,True
+13271,United Kingdom,217.3800,18.7200,198.6600,4979,New,False,False
+15276,United Kingdom,649.5300,18.5000,631.0300,3408,Loyal,False,False
+13651,United Kingdom,211.8500,17.9000,193.9500,5008,Need attention,False,False
+15309,United Kingdom,797.9600,17.0000,780.9600,3058,At risk,False,False
+14515,United Kingdom,3749.2600,17.0000,3732.2600,891,Champions,True,True
+16016,United Kingdom,2151.6700,17.0000,2134.6700,1518,Champions,False,False
+13319,United Kingdom,21323.2200,17.0000,21306.2200,89,Champions,True,True
+14534,United Kingdom,6266.5100,16.9500,6249.5600,483,Champions,True,True
+14573,United Kingdom,2208.3200,16.9000,2191.4200,1488,Loyal,False,False
+13950,United Kingdom,745.0600,16.5000,728.5600,3184,Loyal,False,False
+16928,United Kingdom,3897.5300,16.1000,3881.4300,855,Loyal,True,True
+17908,United Kingdom,1168.2600,15.9500,1152.3100,2409,At risk,False,False
+15996,United Kingdom,1423.6500,15.9000,1407.7500,2100,Loyal,False,False
+17041,United Kingdom,1686.2800,15.8000,1670.4800,1866,Champions,False,False
+17201,United Kingdom,1231.5400,15.6000,1215.9400,2319,Champions,False,False
+13610,United Kingdom,2174.6300,15.3000,2159.3300,1503,Champions,False,False
+15050,United Kingdom,4193.7900,15.1200,4178.6700,786,Champions,True,True
+16945,United Kingdom,8548.1600,15.0000,8533.1600,327,Champions,True,True
+16395,United Kingdom,3537.0000,15.0000,3522.0000,948,Loyal,True,True
+14507,United Kingdom,3284.4300,15.0000,3269.4300,1028,Champions,True,True
+15051,United Kingdom,3935.1600,15.0000,3920.1600,844,Champions,True,True
+17402,United Kingdom,4601.2100,14.9500,4586.2600,693,Champions,True,True
+16894,United Kingdom,1324.0600,14.9500,1309.1100,2201,At risk,False,False
+14796,United Kingdom,10216.8700,14.9000,10201.9700,244,Champions,True,True
+16362,United Kingdom,946.9400,14.8500,932.0900,2764,Loyal,False,False
+16191,United Kingdom,15688.0200,14.7500,15673.2700,139,Champions,True,True
+17338,United Kingdom,12133.7800,14.7500,12119.0300,196,Champions,True,True
+15746,United Kingdom,196.8800,13.9200,182.9600,5085,Need attention,False,False
+13715,United Kingdom,8210.6400,12.9000,8197.7400,351,Can't lose,True,True
+15898,United Kingdom,5070.8700,12.7500,5058.1200,627,Champions,True,True
+17962,United Kingdom,686.3700,12.7500,673.6200,3306,Loyal,False,False
+18009,United Kingdom,2155.8300,12.7500,2143.0800,1514,Can't lose,False,False
+13642,United Kingdom,514.7200,12.7500,501.9700,3760,Hibernating,False,False
+17243,United Kingdom,20614.0600,12.7500,20601.3100,93,Champions,True,True
+13727,United Kingdom,1080.0500,12.7500,1067.3000,2543,Loyal,False,False
+13598,United Kingdom,789.5900,12.7500,776.8400,3079,Loyal,False,False
+15751,United Kingdom,1380.4400,12.7500,1367.6900,2144,Can't lose,False,False
+18118,United Kingdom,6254.9600,12.7000,6242.2600,487,Champions,True,True
+16794,United Kingdom,2088.8900,12.7000,2076.1900,1559,Champions,False,False
+16720,United Kingdom,603.4800,12.1500,591.3300,3524,Loyal,False,False
+17725,United Kingdom,3439.0800,11.9000,3427.1800,974,Champions,True,True
+16987,United Kingdom,2513.9500,11.9000,2502.0500,1328,Champions,False,False
+12500,Germany,5559.2100,11.9000,5547.3100,564,Champions,True,True
+13503,United Kingdom,1824.1900,11.2500,1812.9400,1743,Loyal,False,False
+14755,United Kingdom,9972.5500,10.5000,9962.0500,256,Champions,True,True
+13001,United Kingdom,24172.1000,10.2000,24161.9000,74,Champions,True,True
+17950,United Kingdom,1169.6400,10.0800,1159.5600,2408,Loyal,False,False
+14462,United Kingdom,2265.0100,10.0000,2255.0100,1449,Loyal,False,False
+15532,United Kingdom,3750.2500,9.9500,3740.3000,890,Champions,True,True
+17085,United Kingdom,7883.0100,9.9500,7873.0600,373,Loyal,True,True
+17912,United Kingdom,372.5500,9.9500,362.6000,4250,At risk,False,False
+17988,United Kingdom,485.6900,9.9500,475.7400,3847,Loyal,False,False
+15570,United Kingdom,8793.3900,9.9500,8783.4400,315,Champions,True,True
+13884,United Kingdom,1888.4800,9.9000,1878.5800,1694,Champions,False,False
+16383,United Kingdom,2966.1400,9.9000,2956.2400,1150,Loyal,True,True
+17905,United Kingdom,2171.2700,9.3000,2161.9700,1504,Loyal,False,False
+13544,United Kingdom,829.0000,8.5000,820.5000,2990,Loyal,False,False
+15993,United Kingdom,2788.8700,8.3000,2780.5700,1217,Champions,False,False
+16701,United Kingdom,9916.7300,7.5600,9909.1700,266,Champions,True,True
+17931,United Kingdom,3437.2900,7.5000,3429.7900,975,Loyal,True,True
+15059,United Kingdom,3522.7700,7.5000,3515.2700,949,Champions,True,True
+15023,United Kingdom,11686.9300,7.4900,11679.4400,211,Champions,True,True
+15005,United Kingdom,13881.7000,6.9500,13874.7500,162,Champions,True,True
+17954,United Kingdom,3834.8200,6.3500,3828.4700,870,Champions,True,True
+13564,United Kingdom,16090.8000,5.9500,16084.8500,132,Can't lose,True,True
+16306,United Kingdom,1124.7200,5.1000,1119.6200,2475,At risk,False,False
+16713,United Kingdom,14146.2600,5.1000,14141.1600,154,Champions,True,True
+17231,United Kingdom,7197.0400,5.0700,7191.9700,406,Champions,True,True
+13588,United Kingdom,2478.9500,5.0400,2473.9100,1342,Champions,False,False
+17622,United Kingdom,1130.2100,5.0400,1125.1700,2466,At risk,False,False
+17609,United Kingdom,1881.8000,4.9500,1876.8500,1697,Champions,False,False
+14527,United Kingdom,27219.1900,4.2000,27214.9900,61,Champions,True,True
+16669,United Kingdom,1370.4700,4.0000,1366.4700,2157,Big spenders,False,False
+13857,United Kingdom,1000.9100,3.9000,997.0100,2677,At risk,False,False
+17251,United Kingdom,812.4300,3.7500,808.6800,3032,At risk,False,False
+18168,United Kingdom,3506.9700,3.3000,3503.6700,956,Loyal,True,True
+13684,United Kingdom,596.9800,3.0000,593.9800,3544,At risk,False,False
+15015,United Kingdom,2354.5200,2.9500,2351.5700,1405,Can't lose,False,False
+14247,United Kingdom,772.6600,2.9500,769.7100,3136,At risk,False,False
+13982,United Kingdom,4016.9900,2.5500,4014.4400,825,Champions,True,True
+13593,United Kingdom,5523.6900,1.6800,5522.0100,568,Loyal,True,True

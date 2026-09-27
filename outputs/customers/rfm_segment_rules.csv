@@ -1,0 +1,9 @@
+order,segment,rule
+1,Champions,R>=4 and F>=4 and M>=4
+2,Loyal,R>=3 and F>=3
+3,Big spenders,R>=3 and M>=4 (F<=2)
+4,New,R>=4 and F=1
+5,Can't lose,R<=2 and F>=4 and M>=4
+6,At risk,R<=2 and (F>=3 or M>=3)
+7,Need attention,R>=3 (low F and M)
+8,Hibernating,"everything else (R<=2, F<=2, M<=2)"

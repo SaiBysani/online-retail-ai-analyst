@@ -1,0 +1,25 @@
+Customer ID,Country,lines,revenue,assigned_country
+12370,Austria,39,691.8200,Cyprus
+12370,Cyprus,159,3268.4900,Cyprus
+12394,Belgium,20,351.0800,Belgium
+12394,Denmark,5,729.4000,Belgium
+12413,France,36,686.1000,France
+12413,Spain,12,185.3500,France
+12417,Belgium,319,5491.5500,Belgium
+12417,Spain,32,526.3600,Belgium
+12422,Australia,57,1749.6500,Switzerland
+12422,Switzerland,105,1889.7000,Switzerland
+12423,Belgium,143,2038.5900,Belgium
+12423,Denmark,12,262.8000,Belgium
+12429,Austria,20,381.9800,Denmark
+12429,Denmark,130,5460.4300,Denmark
+12431,Australia,248,7767.2900,Australia
+12431,Belgium,138,2402.4300,Australia
+12449,Belgium,187,3596.2900,Belgium
+12449,Denmark,9,678.6000,Belgium
+12455,Cyprus,176,5066.9900,Cyprus
+12455,Spain,44,655.9600,Cyprus
+12457,Cyprus,2,392.7000,Switzerland
+12457,Switzerland,78,2163.2100,Switzerland
+12652,France,47,793.9800,France
+12652,Germany,3,97.0500,France

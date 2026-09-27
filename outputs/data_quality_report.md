@@ -17,19 +17,20 @@ Status: **PASS** = as expected. **WARN** = a known issue that a CLAUDE.md rule o
 | Cancellations | WARN | 8,292 C invoices, 19,165 lines, -£1,465,304 (-£719,656 on products = 3.7% of revenue) |
 | Date ranges | WARN | 2009-12-01 07:45:00 to 2011-12-09 12:50:00; 25 months, missing months: none; last month has 8 trading days |
 | Suspicious values | WARN | 15 lines with \|Quantity\| >= 10,000; 127 revenue rows on non-standard codes (£1,186); 5,866 lower-case descriptions; 13 customers in >1 country |
+| Revenue lines reversed by a later cancellation | WARN | 1,444 revenue lines (£403,195, 2.0% of revenue) cancelled by the same customer within 24h; 3 of them >= £5,000 worth £284,623 |
 
 ## Analyst notes
 
-No check is FAIL, so analysis can proceed. The WARNs are known issues that CLAUDE.md rules or stated assumptions handle:
+No check FAILs; all WARNs are handled by CLAUDE.md rules or by the stated assumptions below. Figures are counted once across the sheet overlap unless stated.
 
-- **Missing Customer IDs:** 243,007 rows (22.8%) have no Customer ID, including 226,882 revenue rows worth £2,576,013 (13.1% of revenue). They count towards revenue but must be left out of customer metrics (retention, concentration, repeat rate), so those metrics describe about 87% of revenue. (§3 Missing values; `missing_values`)
-- **Sheet overlap and exact duplicates:** the 22,523 overlap rows are identical across the two sheets and are dropped once, as the definition requires. A further 11,731 exact-duplicate lines inside revenue (£57,093, 0.3%) are **kept** under the approved definition. They may be genuine repeat scans, and the amount is too small to change any conclusion. (§4 Duplicates; `duplicates`)
-- **Negative quantities are fully explained:** 19,164 are cancellation lines and 3,393 are price-£0 warehouse stock adjustments ('damaged', 'check', blank). `unexplained_negative_rows` is 0, and none of these rows reach revenue. (§5 Negative quantities; `negative_quantities`)
-- **Cancellations:** 8,292 C invoices (15.5% of invoices) with a value of -£1,465,304. Only -£719,656 of that is products (3.7% of revenue). The rest is fees and manual adjustments (M, AMAZONFEE, BANK CHARGES). Cancellation numbers never match a sale number, so a return can only be linked to its original sale by customer, product and quantity. (§7 Cancellations; `cancellations`)
-- **Large orders reversed minutes later but still in revenue:** invoice 581483 (80,995 × PAPER CRAFT, LITTLE BIRDIE, £168,470, 2011-12-09) was cancelled 12 minutes later by C581484. Invoice 541431 (74,215 × MEDIUM CERAMIC TOP STORAGE JAR, £77,184, 2011-01-18) was cancelled 16 minutes later by C541433. The approved definition keeps both sales in revenue, which inflates Jan 2011, Dec 2011 and the products and customers involved. Later analysis should flag them. It should not silently drop them. (§9 Suspicious values; `suspicious_values`)
-- **Prices:** 2,631 positive-quantity lines at £0 (free items or samples) and 5 bad-debt adjustments (-£147,614) are excluded by the definition. 127 revenue rows on non-standard `DCGS*`/`SP1002` codes (£1,186) stay in revenue, which is immaterial. (§6 Invalid prices, §9; `invalid_prices`)
-- **Edge months limit trend analysis:** Dec 2011 has only 8 trading days, so it must not be compared with full months. In Dec 2009 every customer looks "new", so new-vs-returning and cohort metrics are only meaningful from 2010 onward. (§8 Date ranges; `date_ranges`)
-- **Fit for analysis: yes with caveats.** Every check passes or warns, and every negative row is classified. The caveats are that customer metrics cover 87% of revenue, two reversed bulk orders (£245,653 combined) remain in revenue, and Dec 2011 is partial.
+- **Customer ID missing.** 243,007 rows (22.8%) have no Customer ID; within approved revenue that is 226,882 rows worth £2,576,013 (13.1% of £19,700,954). These rows count towards revenue but **must be excluded from customer-level metrics** (customer counts, AOV per customer, retention, RFM, CLV). Customer metrics therefore cover about 86.9% of revenue, and totals from customer analysis will not reconcile with total revenue. (§3 Missing values; `nulls.revenue_without_customer`)
+- **Sheet overlap and duplicates.** The 22,523 overlap rows (£377,488) are identical copies (`overlap_copies_identical: true`), and the approved definition drops the 2010-2011 copies. A further 11,731 exact-duplicate lines remain inside revenue, worth £57,093 (0.3%). The approved definition keeps them as possible repeat scans; this is a stated assumption, not a fix. (§4 Duplicates)
+- **Negative quantities are all classified.** 22,557 rows: 19,164 cancellations (C) and 3,393 price-£0 stock adjustments (warehouse notes such as 'damaged' or 'check', none with a customer). `unexplained_negative_rows` = 0. The 6 bad-debt rows (A invoices, -£147,614) have positive quantity and negative price. One C line has a positive quantity (C496350). None of these rows reach revenue. (§5 Negative quantities, §6 Invalid prices, §2 audit)
+- **Cancellations.** 8,292 C invoices (15.5% of invoices), 19,165 lines, -£1,465,304 in total; -£719,656 of that is on products (3.7% of revenue). C numbers never match their original sale number, so returns cannot be linked by invoice. Revenue is **gross of returns**: any "net revenue" figure must be labelled as such and cannot be allocated back to the original sale. (§7 Cancellations)
+- **Large sales reversed minutes later (possible issue with the approved definition).** 1,444 revenue lines (£403,195, 2.0% of revenue) are reversed by the same customer within 24h. The figure is approximate: rows without a customer cannot be matched, and a cancellation can match more than one sale. Three reversals account for £284,623: 581483 (£168,470, reversed after 12 min, and 2011-12-09, so inside the partial month), 541431 (£77,184, 16 min; customer 12346) and 556444 (£38,970, reversed via a manual `M` line after 3 min). The approved definition keeps the sales and drops the reversals, which inflates Dec 2011, Jan 2011 and Jun 2011 revenue and the value of customers 16446, 12346 and 15098. **Not changed.** Question for the user: should these reversed orders be netted out or excluded from revenue, or at least reported in a sensitivity line? Until the user answers, downstream work must flag them wherever they move a result: top products, top customers, monthly peaks, AOV. (§10 Revenue lines reversed; §9 Suspicious values)
+- **Time-window edges.** Data runs 2009-12-01 to 2011-12-09 with no missing months. Dec 2011 has only 8 trading days and must not be compared with full months or used in growth rates; compare FY1 (Dec09-Nov10) with FY2 (Dec10-Nov11). Dec 2009 is the first month, so every customer there looks "new"; do not read it as acquisition, and use it only as a baseline for cohort and retention work. Saturday is almost absent (402 rows), so weekday patterns reflect the trading calendar. (§8 Date ranges)
+- **Minor items that stay in revenue or need care.** 127 revenue rows on non-standard codes (`DCGS*`, `SP1002`) worth £1,186, kept by the approved definition. 2,631 positive-quantity £0 lines (free items) are excluded by Price > 0. EIRE, RSA, Unspecified (756 rows) and European Community appear as country values, and 13 customers appear under more than one country, so country analysis must pick one country per customer or work at line level. Non-product codes removed £821,725 of line value, mostly DOT and POST. (§9 Suspicious values, §6 Invalid prices, §2 audit)
+- **Fit for analysis: yes with caveats.** Schema and row counts PASS and every negative row is explained. The approved revenue of £19,700,954 over 1,015,071 rows is reproducible (§2). Downstream analysis must carry these caveats: exclude missing Customer IDs from customer metrics (13.1% of revenue), treat Dec 2011 as partial and Dec 2009 as a cohort edge, and flag the £284,623 of large same-day reversals that the approved definition keeps in revenue. The last is pending a user decision.
 
 ## 1. Schema and types (PASS)
 
@@ -359,3 +360,26 @@ Listed non-product codes never seen in the data: none.
 | RSA | 169 |
 | European Community | 61 |
 | West Indies | 54 |
+
+## 10. Revenue lines reversed by a later cancellation (WARN)
+
+Matching rule: same Customer ID, cancellation dated 0-24h after the sale, and either the same StockCode + Price with the opposite Quantity, or a manual `M` cancellation whose value equals the sale line value. Rows without a Customer ID cannot be matched, so this is a lower bound.
+
+- Matched revenue lines: 1,444, worth £403,195 (2.0% of approved revenue).
+- The approved definition keeps these sales in revenue and drops the cancellations (C rows are excluded, and `M` is a non-product code), so revenue includes sales that were reversed.
+- Lines >= £5,000: 3, worth £284,623.
+
+Largest reversed revenue lines:
+
+| Invoice | Invoice_c | match | StockCode | Quantity | value | minutes | Customer ID |
+|---|---|---|---|---|---|---|---|
+| 581483 | C581484 | same code | 23843 | 80,995 | 168,469.60 | 12.00 | 16446 |
+| 541431 | C541433 | same code | 23166 | 74,215 | 77,183.60 | 16.00 | 12346 |
+| 556444 | C556445 | manual M | 22502 | 60 | 38,970.00 | 3.00 | 15098 |
+| 567423 | C567527 | same code | 23113 | 756 | 3,825.36 | 1,331.00 | 17450 |
+| 529350 | C529352 | same code | 71477 | 1,152 | 3,168.00 | 3.00 | 17450 |
+| 515296 | C515299 | same code | 84078A | 85 | 2,970.75 | 6.00 | 13734 |
+| 515281 | C515299 | same code | 84078A | 85 | 2,970.75 | 93.00 | 13734 |
+| 569385 | C569387 | same code | 23284 | 200 | 1,416.00 | 1.00 | 14031 |
+| 572324 | C572343 | same code | 23056 | 240 | 1,293.60 | 48.00 | 14607 |
+| 539109 | C539329 | same code | 85123A | 500 | 1,275.00 | 1,350.00 | 16013 |

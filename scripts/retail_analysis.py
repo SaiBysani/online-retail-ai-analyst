@@ -30,6 +30,7 @@ import pandas as pd
 from retail_common import OUT, cancellation_rows, load, revenue_rows
 
 FULL_YEARS = ["FY1", "FY2"]
+REVERSAL_WINDOW_HOURS = 24
 ASSUMPTIONS = [
     "Revenue = approved CLAUDE.md definition; exact duplicate lines are kept, as the definition does.",
     "FY1 = Dec 2009-Nov 2010, FY2 = Dec 2010-Nov 2011; Dec 2011 (1-9 Dec) is partial and excluded "
@@ -170,15 +171,28 @@ def anomaly_tables(rev, canc, all_rows):
     daily["largest_line_share"] = top_line / daily.revenue
     days = daily[daily.robust_z.abs() >= 4].sort_values("robust_z", ascending=False)
 
-    # Big orders followed by a cancellation of the same product and quantity.
+    # Big orders followed by a cancellation of the same product, quantity and price by the same customer,
+    # or (failing that) by a manual M cancellation line of the same value (data_quality_report.md §10).
     big = rev[rev.line_value >= 5000]
-    c = canc.assign(q=-canc.Quantity)
-    reversed_ = big.merge(c[["StockCode", "q", "Invoice", "InvoiceDate", "Customer ID"]],
-                          left_on=["StockCode", "Quantity", "Customer ID"],
-                          right_on=["StockCode", "q", "Customer ID"], suffixes=("", "_cancel"))
-    reversed_ = reversed_[reversed_.InvoiceDate_cancel >= reversed_.InvoiceDate]
+    c = canc.assign(q=-canc.Quantity, StockCode_cancel=canc.StockCode)
+    by_code = big.merge(c[["StockCode", "q", "Price", "Invoice", "InvoiceDate", "Customer ID", "StockCode_cancel"]],
+                        left_on=["StockCode", "Quantity", "Price", "Customer ID"],
+                        right_on=["StockCode", "q", "Price", "Customer ID"], suffixes=("", "_cancel"))
+    by_code = by_code[by_code.InvoiceDate_cancel >= by_code.InvoiceDate]
+    manual = cancellation_rows(all_rows, products_only=False)
+    manual = manual[manual.StockCode.isin(["M", "m"])].assign(v=lambda d: -d.line_value.round(2),
+                                                              StockCode_cancel=lambda d: d.StockCode)
+    by_m = (big[~big.Invoice.isin(by_code.Invoice)].assign(v=lambda d: d.line_value.round(2))
+            .merge(manual[["v", "Invoice", "InvoiceDate", "Customer ID", "StockCode_cancel"]],
+                   on=["v", "Customer ID"], suffixes=("", "_cancel")))
+    by_m = by_m[by_m.InvoiceDate_cancel >= by_m.InvoiceDate]
+    reversed_ = pd.concat([by_code, by_m], ignore_index=True).sort_values("InvoiceDate")
+    # Lag to the cancellation; <= 24h matches the data-quality report's "reversed order" rule (§10).
+    reversed_["hours_to_cancel"] = (reversed_.InvoiceDate_cancel - reversed_.InvoiceDate).dt.total_seconds() / 3600
+    reversed_["within_24h"] = reversed_.hours_to_cancel <= REVERSAL_WINDOW_HOURS
     reversed_ = reversed_[["Invoice", "InvoiceDate", "StockCode", "Description", "Quantity", "line_value",
-                           "Customer ID", "Invoice_cancel", "InvoiceDate_cancel"]]
+                           "Customer ID", "Invoice_cancel", "StockCode_cancel", "InvoiceDate_cancel",
+                           "hours_to_cancel", "within_24h"]]
 
     lines = rev.nlargest(20, "line_value")[["Invoice", "InvoiceDate", "StockCode", "Description", "Quantity",
                                             "Price", "line_value", "Customer ID", "Country"]]
@@ -209,6 +223,33 @@ def main():
     countries = country_table(rev, canc)
     days, top_lines, reversed_, price_out, day_med, day_mad = anomaly_tables(rev, canc, df)
 
+    # Sensitivity: drop the big sales reversed within 24h (and their cancellations). Headline revenue
+    # keeps the approved definition; these columns only show how far the reversals move each result.
+    r24 = reversed_[reversed_.within_24h]
+    r24_sale = set(zip(r24.Invoice, r24.StockCode))
+    r24_canc = set(zip(r24.Invoice_cancel, r24.StockCode_cancel))
+    is_r24 = pd.Series([k in r24_sale for k in zip(rev.Invoice, rev.StockCode)], index=rev.index)
+    is_r24c = pd.Series([k in r24_canc for k in zip(canc.Invoice, canc.StockCode)], index=canc.index)
+    rev_x24, canc_x24 = rev[~is_r24], canc[~is_r24c]
+    mx = rev_x24.groupby("month").agg(r=("line_value", "sum"), o=("Invoice", "nunique"))
+    mx.index = mx.index.astype(str)
+    cx = -canc_x24.groupby("month").line_value.sum()
+    cx.index = cx.index.astype(str)
+    monthly["revenue_excl_reversed_24h"] = mx.r.reindex(monthly.index)
+    monthly["aov_excl_reversed_24h"] = (mx.r / mx.o).reindex(monthly.index)
+    cx = cx.reindex(monthly.index, fill_value=0)
+    monthly["cancel_rate_excl_reversed_24h"] = cx / (monthly.revenue_excl_reversed_24h + cx)
+    monthly["revenue_yoy_excl_reversed_24h"] = (monthly.revenue_excl_reversed_24h
+                                                / monthly.revenue_excl_reversed_24h.shift(12) - 1)
+    p_x = rev_x24.groupby("StockCode").line_value.sum()
+    p_fy2_x = rev_x24[rev_x24.fy == "FY2"].groupby("StockCode").line_value.sum()
+    for t in (products, movers, high_cancel):
+        t["revenue_excl_reversed_24h"] = p_x.reindex(t.index, fill_value=0)
+        t["FY2_excl_reversed_24h"] = p_fy2_x.reindex(t.index, fill_value=0)
+    products["rank_excl_reversed_24h"] = products.revenue_excl_reversed_24h.rank(ascending=False, method="min")
+    countries["FY2_excl_reversed_24h"] = by_fy_pivot(rev_x24, "Country").FY2.reindex(countries.index, fill_value=0)
+    countries["fy_change_excl_reversed_24h"] = countries.FY2_excl_reversed_24h / countries.FY1.replace(0, np.nan) - 1
+
     tables = {
         "monthly.csv": monthly, "products.csv": products, "product_movers.csv": movers,
         "products_high_cancel.csv": high_cancel, "customer_concentration.csv": conc,
@@ -235,7 +276,7 @@ def main():
     uk_fy = countries.loc["United Kingdom", FULL_YEARS] / countries[FULL_YEARS].sum()
     # Sales later reversed by a matching cancellation (anomaly_reversed_orders.csv), and those cancellations.
     rev_keys = set(zip(reversed_.Invoice, reversed_.StockCode))
-    canc_keys = set(zip(reversed_.Invoice_cancel, reversed_.StockCode))
+    canc_keys = set(zip(reversed_.Invoice_cancel, reversed_.StockCode_cancel))
     is_rev = pd.Series([k in rev_keys for k in zip(rev.Invoice, rev.StockCode)], index=rev.index)
     is_canc = pd.Series([k in canc_keys for k in zip(canc.Invoice, canc.StockCode)], index=canc.index)
     fy_reversed = by_fy(rev[is_rev])
@@ -243,6 +284,36 @@ def main():
 
     def m(value, definition, source):
         return {"value": value, "definition": definition, "source": source}
+
+    fy_rev_x24 = by_fy(rev_x24)
+    fy_canc_x24 = -by_fy(canc_x24)
+    fy_orders_x24 = rev_x24[rev_x24.fy.isin(FULL_YEARS)].groupby("fy").Invoice.nunique().reindex(FULL_YEARS)
+    fy_aov_x24 = fy_rev_x24 / fy_orders_x24
+    uk_x24 = countries.loc["United Kingdom"]
+    r24_src = "anomaly_reversed_orders.csv (within_24h)"
+    sensitivity = {
+        "reversed_24h_orders": m(int(r24.Invoice.nunique()), f"Standard sensitivity scope: sales lines >= £5K "
+                                 f"cancelled by the same customer (same code, quantity and price, or a manual M "
+                                 f"line of the same value) within {REVERSAL_WINDOW_HOURS}h", r24_src),
+        "reversed_24h_value": m(round(float(r24.drop_duplicates(["Invoice", "StockCode"]).line_value.sum()), 2),
+                                "Revenue on those lines (kept in approved revenue)", r24_src),
+        "revenue_total_excl_reversed_24h": m(round(float(rev_x24.line_value.sum()), 2),
+                                             "Sensitivity: approved revenue minus the 24h reversals", r24_src),
+        "revenue_FY2_excl_reversed_24h": m(round(float(fy_rev_x24.FY2), 2), "Sensitivity: FY2 revenue", r24_src),
+        "revenue_growth_excl_reversed_24h": m(change(fy_rev_x24.FY1, fy_rev_x24.FY2),
+                                              "Sensitivity: FY2 / FY1 - 1", r24_src),
+        "aov_FY2_excl_reversed_24h": m(round(float(fy_aov_x24.FY2), 2), "Sensitivity: FY2 AOV", r24_src),
+        "aov_growth_excl_reversed_24h": m(change(fy_aov_x24.FY1, fy_aov_x24.FY2), "Sensitivity: AOV FY2 / FY1 - 1",
+                                          r24_src),
+        "cancel_rate_FY2_excl_reversed_24h": m(float(fy_canc_x24.FY2 / (fy_rev_x24.FY2 + fy_canc_x24.FY2)),
+                                               "Sensitivity: FY2 cancellation rate without the 24h reversals "
+                                               "and their cancellations", r24_src),
+        "revenue_identified_growth_excl_reversed_24h": m(
+            change(by_fy(rev_x24.dropna(subset=["Customer ID"])).FY1, by_fy(rev_x24.dropna(subset=["Customer ID"])).FY2),
+            "Sensitivity: identified (Customer ID) revenue FY2 / FY1 - 1", r24_src),
+        "uk_growth_excl_reversed_24h": m(change(uk_x24.FY1, uk_x24.FY2_excl_reversed_24h),
+                                         "Sensitivity: UK FY2 / FY1 - 1", "countries.csv"),
+    }
 
     metrics = {
         "assumptions": ASSUMPTIONS,
@@ -265,18 +336,20 @@ def main():
                                           "monthly.csv"),
             "revenue_unidentified_growth": m(change(fy_unident.FY1, fy_unident.FY2),
                                              "Unidentified revenue FY2 / FY1 - 1", "monthly.csv"),
-            "reversed_orders_revenue_FY1": m(round(fy_reversed.FY1, 2), "Revenue on reversed big orders, FY1",
-                                             "anomaly_reversed_orders.csv"),
-            "reversed_orders_revenue_FY2": m(round(fy_reversed.FY2, 2), "Revenue on reversed big orders, FY2",
-                                             "anomaly_reversed_orders.csv"),
-            "revenue_growth_excl_reversed": m(change(fy_rev_x.FY1, fy_rev_x.FY2),
-                                              "FY2 / FY1 - 1 with reversed big orders removed from both years",
+            # Wider scope, any lag: NOT the standard sensitivity line (that is *_excl_reversed_24h).
+            "reversed_any_lag_revenue_FY1": m(round(fy_reversed.FY1, 2),
+                                              "Any-lag scope: revenue on >=£5K lines later reversed, FY1",
                                               "anomaly_reversed_orders.csv"),
-            "cancel_rate_FY1_excl_reversed": m(float(fy_canc_x.FY1 / (fy_rev_x.FY1 + fy_canc_x.FY1)),
-                                               "FY1 cancellation rate without the reversed big orders and their "
-                                               "cancellations", "anomaly_reversed_orders.csv"),
-            "cancel_rate_FY2_excl_reversed": m(float(fy_canc_x.FY2 / (fy_rev_x.FY2 + fy_canc_x.FY2)),
-                                               "As above, FY2", "anomaly_reversed_orders.csv"),
+            "reversed_any_lag_revenue_FY2": m(round(fy_reversed.FY2, 2), "Any-lag scope: as above, FY2",
+                                              "anomaly_reversed_orders.csv"),
+            "revenue_growth_excl_reversed_any_lag": m(change(fy_rev_x.FY1, fy_rev_x.FY2),
+                                                      "Any-lag scope: FY2 / FY1 - 1 with all >=£5K reversed lines "
+                                                      "removed from both years", "anomaly_reversed_orders.csv"),
+            "cancel_rate_FY1_excl_reversed_any_lag": m(float(fy_canc_x.FY1 / (fy_rev_x.FY1 + fy_canc_x.FY1)),
+                                                       "Any-lag scope: FY1 cancellation rate without those lines "
+                                                       "and their cancellations", "anomaly_reversed_orders.csv"),
+            "cancel_rate_FY2_excl_reversed_any_lag": m(float(fy_canc_x.FY2 / (fy_rev_x.FY2 + fy_canc_x.FY2)),
+                                                       "Any-lag scope: as above, FY2", "anomaly_reversed_orders.csv"),
             "orders_growth": m(change(fy_orders.FY1, fy_orders.FY2), "Orders FY2 / FY1 - 1", "monthly.csv"),
             "aov_growth": m(change(fy_aov.FY1, fy_aov.FY2), "AOV FY2 / FY1 - 1", "monthly.csv"),
             "uk_share_FY1": m(float(uk_fy.FY1), "UK share of FY1 revenue", "countries.csv"),
@@ -304,6 +377,8 @@ def main():
                                                "repeat_purchases.csv"),
             "median_days_between_purchases": m(median_gap, "Median over repeat customers of "
                                                "(last - first purchase) / (purchase days - 1)", "repeat_purchases.csv"),
+            "peak_season_share_FY1": m(float(peak.loc[peak.index < "2010-12", "revenue"].sum() / fy_rev.FY1),
+                                       "Sep-Nov 2010 revenue / FY1 revenue", "monthly.csv"),
             "peak_season_share_FY2": m(float(peak.loc[peak.index >= "2011-09", "revenue"].sum() / fy_rev.FY2),
                                        "Sep-Nov 2011 revenue / FY2 revenue", "monthly.csv"),
             "uk_revenue_share": m(float(uk.share), "UK share of total revenue", "countries.csv"),
@@ -326,10 +401,12 @@ def main():
             "top_product_revenue": m(round(float(products.revenue.iloc[0]), 2), "", "products.csv"),
             "anomaly_days": m(int(len(days)), f"Days with |robust z| >= 4 (median £{day_med:,.0f}, "
                               f"scaled MAD £{day_mad:,.0f})", "anomaly_days.csv"),
-            "reversed_big_orders_value": m(round(float(reversed_.drop_duplicates("Invoice").line_value.sum()), 2)
-                                           if len(reversed_) else 0.0,
-                                           "Value of >=£5K lines later cancelled with the same code, quantity "
-                                           "and customer (still counted in revenue)", "anomaly_reversed_orders.csv"),
+            "reversed_any_lag_value": m(round(float(reversed_.drop_duplicates("Invoice").line_value.sum()), 2)
+                                        if len(reversed_) else 0.0,
+                                        "Any-lag scope: value of >=£5K lines later cancelled by the same customer "
+                                        "(same code, quantity and price, or a manual M line of the same value); "
+                                        "still counted in revenue", "anomaly_reversed_orders.csv"),
+            **sensitivity,
         },
     }
     (out / "metrics.json").write_text(json.dumps(metrics, indent=2, default=str))

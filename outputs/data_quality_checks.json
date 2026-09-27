@@ -222,5 +222,21 @@
         "max": 80995.0
       }
     }
+  },
+  {
+    "id": "reversed_sales",
+    "title": "Revenue lines reversed by a later cancellation",
+    "status": "WARN",
+    "headline": "1,444 revenue lines (\u00a3403,195, 2.0% of revenue) cancelled by the same customer within 24h; 3 of them >= \u00a35,000 worth \u00a3284,623",
+    "numbers": {
+      "reversed_rows": 1444,
+      "reversed_value": 403194.72,
+      "reversed_share_of_revenue": 0.020465745516439055,
+      "reversed_rows_same_code": 1429,
+      "reversed_rows_manual_m": 15,
+      "reversed_rows_ge_5000": 3,
+      "reversed_value_ge_5000": 284623.2,
+      "window_hours": 24
+    }
   }
 ]

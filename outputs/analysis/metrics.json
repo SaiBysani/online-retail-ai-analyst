@@ -100,29 +100,29 @@
       "definition": "Unidentified revenue FY2 / FY1 - 1",
       "source": "monthly.csv"
     },
-    "reversed_orders_revenue_FY1": {
-      "value": 15818.4,
-      "definition": "Revenue on reversed big orders, FY1",
+    "reversed_any_lag_revenue_FY1": {
+      "value": 0.0,
+      "definition": "Any-lag scope: revenue on >=\u00a35K lines later reversed, FY1",
       "source": "anomaly_reversed_orders.csv"
     },
-    "reversed_orders_revenue_FY2": {
+    "reversed_any_lag_revenue_FY2": {
       "value": 122693.0,
-      "definition": "Revenue on reversed big orders, FY2",
+      "definition": "Any-lag scope: as above, FY2",
       "source": "anomaly_reversed_orders.csv"
     },
-    "revenue_growth_excl_reversed": {
-      "value": 0.012698914577396136,
-      "definition": "FY2 / FY1 - 1 with reversed big orders removed from both years",
+    "revenue_growth_excl_reversed_any_lag": {
+      "value": 0.011000071564607694,
+      "definition": "Any-lag scope: FY2 / FY1 - 1 with all >=\u00a35K reversed lines removed from both years",
       "source": "anomaly_reversed_orders.csv"
     },
-    "cancel_rate_FY1_excl_reversed": {
-      "value": 0.024955076655543088,
-      "definition": "FY1 cancellation rate without the reversed big orders and their cancellations",
+    "cancel_rate_FY1_excl_reversed_any_lag": {
+      "value": 0.024914256503423517,
+      "definition": "Any-lag scope: FY1 cancellation rate without those lines and their cancellations",
       "source": "anomaly_reversed_orders.csv"
     },
-    "cancel_rate_FY2_excl_reversed": {
-      "value": 0.02258631665842968,
-      "definition": "As above, FY2",
+    "cancel_rate_FY2_excl_reversed_any_lag": {
+      "value": 0.02264421522397711,
+      "definition": "Any-lag scope: as above, FY2",
       "source": "anomaly_reversed_orders.csv"
     },
     "orders_growth": {
@@ -210,6 +210,11 @@
       "definition": "Median over repeat customers of (last - first purchase) / (purchase days - 1)",
       "source": "repeat_purchases.csv"
     },
+    "peak_season_share_FY1": {
+      "value": 0.361161080478933,
+      "definition": "Sep-Nov 2010 revenue / FY1 revenue",
+      "source": "monthly.csv"
+    },
     "peak_season_share_FY2": {
       "value": 0.3722983767693937,
       "definition": "Sep-Nov 2011 revenue / FY2 revenue",
@@ -280,10 +285,60 @@
       "definition": "Days with |robust z| >= 4 (median \u00a328,234, scaled MAD \u00a312,520)",
       "source": "anomaly_days.csv"
     },
-    "reversed_big_orders_value": {
-      "value": 306981.0,
-      "definition": "Value of >=\u00a35K lines later cancelled with the same code, quantity and customer (still counted in revenue)",
+    "reversed_any_lag_value": {
+      "value": 291162.6,
+      "definition": "Any-lag scope: value of >=\u00a35K lines later cancelled by the same customer (same code, quantity and price, or a manual M line of the same value); still counted in revenue",
       "source": "anomaly_reversed_orders.csv"
+    },
+    "reversed_24h_orders": {
+      "value": 3,
+      "definition": "Standard sensitivity scope: sales lines >= \u00a35K cancelled by the same customer (same code, quantity and price, or a manual M line of the same value) within 24h",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "reversed_24h_value": {
+      "value": 284623.2,
+      "definition": "Revenue on those lines (kept in approved revenue)",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "revenue_total_excl_reversed_24h": {
+      "value": 19416331.24,
+      "definition": "Sensitivity: approved revenue minus the 24h reversals",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "revenue_FY2_excl_reversed_24h": {
+      "value": 9539786.19,
+      "definition": "Sensitivity: FY2 revenue",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "revenue_growth_excl_reversed_24h": {
+      "value": 0.011693574419786579,
+      "definition": "Sensitivity: FY2 / FY1 - 1",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "aov_FY2_excl_reversed_24h": {
+      "value": 503.29,
+      "definition": "Sensitivity: FY2 AOV",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "aov_growth_excl_reversed_24h": {
+      "value": 0.05375184593879423,
+      "definition": "Sensitivity: AOV FY2 / FY1 - 1",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "cancel_rate_FY2_excl_reversed_24h": {
+      "value": 0.02328341999418112,
+      "definition": "Sensitivity: FY2 cancellation rate without the 24h reversals and their cancellations",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "revenue_identified_growth_excl_reversed_24h": {
+      "value": -0.027761262405290088,
+      "definition": "Sensitivity: identified (Customer ID) revenue FY2 / FY1 - 1",
+      "source": "anomaly_reversed_orders.csv (within_24h)"
+    },
+    "uk_growth_excl_reversed_24h": {
+      "value": -0.006122248430775468,
+      "definition": "Sensitivity: UK FY2 / FY1 - 1",
+      "source": "countries.csv"
     }
   }
 }

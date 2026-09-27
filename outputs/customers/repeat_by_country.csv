@@ -1,0 +1,5 @@
+country,customers,repeat_in_window,repeat_ever,median_first_value,median_monetary
+United Kingdom,3645,0.5635,0.7235,290.6000,806.7200
+Non-UK,361,0.5762,0.7424,402.9000,1200.7800
+Germany,73,0.6438,0.8219,477.3000,1824.1000
+France,57,0.6667,0.7544,345.3600,926.1700

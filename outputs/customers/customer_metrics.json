@@ -1,0 +1,319 @@
+{
+  "assumptions": [
+    "Scope: approved-revenue rows with a Customer ID only; rows without one are excluded (see revenue_share_without_customer_id), so customer totals do not reconcile to total revenue.",
+    "Monetary = approved (gross) revenue per customer; cancellations are never netted in and are reported separately per customer as cancel_value (C invoices, product codes).",
+    "Frequency = distinct purchase days (same-day split invoices count once); distinct invoices kept as orders.",
+    "Recency = days from last purchase day to snapshot 2011-12-10 (day after the last invoice). Dec 2011 is partial (1-9 Dec).",
+    "R, F, M scored 1-5 by quintile of percentile rank (ties share a score; recent = 5). Segments follow the ordered rule table in rfm_segment_rules.csv (first match wins).",
+    "Country per customer = country on most of their revenue lines (ties alphabetical); 12 customers have revenue lines in >1 (13 if cancellation rows are counted).",
+    "Usual gap = median days between a customer's consecutive purchase days (2+ purchase days needed).",
+    "High-value at risk = top 20% by monetary, 2+ purchase days, recency > 2 x usual gap and > 90 days. One-day high-value customers are counted separately (no usual gap).",
+    "Reversed sales = revenue lines cancelled by the same customer within 24h (data-quality rule). Kept in monetary per the approved definition, flagged, and removed in the sensitivity views.",
+    "Dec 2009 is the first month of data: customers first seen then are left-censored (flag starts_dec2009) and are a cohort baseline, not acquisition.",
+    "Repeat-within-180-days metrics use customers first seen from 2010-01-01 with at least 180 days of observation before the snapshot."
+  ],
+  "constants": {
+    "snapshot": "2011-12-10",
+    "top_value_share": 0.2,
+    "gap_multiple": 2.0,
+    "min_recency_days": 90,
+    "reversal_window_hours": 24,
+    "large_order_gbp": 5000,
+    "dominant_share": 0.5,
+    "repeat_window_days": 180
+  },
+  "tables": [
+    "at_risk_sensitivity.csv",
+    "cohort_retention.csv",
+    "concentration.csv",
+    "customers_rfm.csv",
+    "high_value_at_risk.csv",
+    "multi_country_customers.csv",
+    "one_off_vs_repeat.csv",
+    "repeat_bands.csv",
+    "repeat_by_acquisition_fy.csv",
+    "repeat_by_country.csv",
+    "repeat_by_first_order_products.csv",
+    "repeat_by_first_order_value.csv",
+    "repeat_by_first_product.csv",
+    "repeat_curve.csv",
+    "repeat_first_to_second.csv",
+    "reversed_by_customer.csv",
+    "rfm_score_bounds.csv",
+    "rfm_segment_rules.csv",
+    "rfm_segments.csv",
+    "top_customers.csv"
+  ],
+  "metrics": {
+    "revenue_total": {
+      "value": 19700954.44,
+      "definition": "Approved revenue, all rows",
+      "source": "outputs/analysis/metrics.json"
+    },
+    "revenue_identified": {
+      "value": 17124940.98,
+      "definition": "Approved revenue on rows with a Customer ID",
+      "source": "customers_rfm.csv"
+    },
+    "revenue_share_without_customer_id": {
+      "value": 0.1308,
+      "definition": "Share of approved revenue with no Customer ID (excluded from all customer metrics)",
+      "source": "outputs/analysis/metrics.json"
+    },
+    "customers": {
+      "value": 5852,
+      "definition": "Distinct Customer IDs with approved revenue",
+      "source": "customers_rfm.csv"
+    },
+    "customers_cancel_only": {
+      "value": 23,
+      "definition": "Customer IDs with cancellations but no approved revenue (not in RFM)",
+      "source": "customers_rfm.csv"
+    },
+    "customers_multi_country": {
+      "value": 12,
+      "definition": "Customers with revenue lines in >1 country; assigned their modal country",
+      "source": "multi_country_customers.csv"
+    },
+    "customers_starting_dec2009": {
+      "value": 951,
+      "definition": "Customers first seen in Dec 2009 (left-censored history)",
+      "source": "customers_rfm.csv"
+    },
+    "monetary_median": {
+      "value": 860.265,
+      "definition": "Median revenue per customer",
+      "source": "customers_rfm.csv"
+    },
+    "monetary_mean": {
+      "value": 2926.3399,
+      "definition": "Mean revenue per customer",
+      "source": "customers_rfm.csv"
+    },
+    "top_1pct_customer_share": {
+      "value": 0.3201,
+      "definition": "Identified revenue share of top 1% customers",
+      "source": "concentration.csv"
+    },
+    "top_10pct_customer_share": {
+      "value": 0.6378,
+      "definition": "Identified revenue share of top 10% customers",
+      "source": "concentration.csv"
+    },
+    "top_20pct_customer_share": {
+      "value": 0.7708,
+      "definition": "Identified revenue share of top 20% customers",
+      "source": "concentration.csv"
+    },
+    "top_1pct_share_excl_reversed": {
+      "value": 0.3116,
+      "definition": "As top_1pct_customer_share with reversed sales removed",
+      "source": "concentration.csv"
+    },
+    "reversed_value_identified": {
+      "value": 403194.72,
+      "definition": "Revenue on lines reversed by the same customer within 24h (kept in monetary)",
+      "source": "reversed_by_customer.csv"
+    },
+    "reversed_lines": {
+      "value": 1444,
+      "definition": "Revenue lines reversed within 24h",
+      "source": "reversed_by_customer.csv"
+    },
+    "customers_with_reversed_sales": {
+      "value": 297,
+      "definition": "Customers with any reversed sale",
+      "source": "reversed_by_customer.csv"
+    },
+    "top20_changed_by_reversals": {
+      "value": 5,
+      "definition": "Customers who leave the top 20% when reversed sales are removed",
+      "source": "reversed_by_customer.csv"
+    },
+    "customer_cancel_value": {
+      "value": 711603.52,
+      "definition": "Cancelled product value of identified customers (C invoices; not netted into monetary)",
+      "source": "customers_rfm.csv"
+    },
+    "segment_revenue_share_champions": {
+      "value": 0.6858,
+      "definition": "Share of identified revenue from Champions (1321 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "segment_revenue_share_loyal": {
+      "value": 0.1376,
+      "definition": "Share of identified revenue from Loyal (1202 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "segment_revenue_share_big_spenders": {
+      "value": 0.0241,
+      "definition": "Share of identified revenue from Big spenders (85 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "segment_revenue_share_new": {
+      "value": 0.0043,
+      "definition": "Share of identified revenue from New (240 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "segment_revenue_share_cant_lose": {
+      "value": 0.0566,
+      "definition": "Share of identified revenue from Can't lose (252 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "segment_revenue_share_at_risk": {
+      "value": 0.052,
+      "definition": "Share of identified revenue from At risk (702 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "segment_revenue_share_need_attention": {
+      "value": 0.0182,
+      "definition": "Share of identified revenue from Need attention (665 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "segment_revenue_share_hibernating": {
+      "value": 0.0214,
+      "definition": "Share of identified revenue from Hibernating (1385 customers)",
+      "source": "rfm_segments.csv"
+    },
+    "high_value_at_risk_customers": {
+      "value": 151,
+      "definition": "Top 20% by monetary, 2+ purchase days, recency > 2x usual gap and > 90 days",
+      "source": "high_value_at_risk.csv"
+    },
+    "high_value_at_risk_monetary": {
+      "value": 1204187.73,
+      "definition": "Lifetime monetary of those customers",
+      "source": "high_value_at_risk.csv"
+    },
+    "high_value_at_risk_revenue_FY2": {
+      "value": 339546.07,
+      "definition": "Their FY2 (Dec10-Nov11) revenue: the annual revenue at stake",
+      "source": "high_value_at_risk.csv"
+    },
+    "high_value_at_risk_monetary_excl_reversed": {
+      "value": 1109582.6,
+      "definition": "As above, excluding reversed sales",
+      "source": "high_value_at_risk.csv"
+    },
+    "high_value_at_risk_share_of_top20": {
+      "value": 0.1291,
+      "definition": "At-risk share of top-20% customers",
+      "source": "high_value_at_risk.csv"
+    },
+    "high_value_at_risk_flagged": {
+      "value": 23,
+      "definition": "At-risk customers with a distortion flag other than starts_dec2009",
+      "source": "high_value_at_risk.csv"
+    },
+    "high_value_at_risk_customers_excl_reversed": {
+      "value": 150,
+      "definition": "At-risk count when top 20% is ranked on monetary excluding reversed sales",
+      "source": "at_risk_sensitivity.csv"
+    },
+    "high_value_at_risk_monetary_excl_reversed_basis": {
+      "value": 1123018.24,
+      "definition": "Their gross monetary",
+      "source": "at_risk_sensitivity.csv"
+    },
+    "high_value_at_risk_revenue_FY2_excl_reversed_basis": {
+      "value": 263702.79,
+      "definition": "Their FY2 revenue",
+      "source": "at_risk_sensitivity.csv"
+    },
+    "high_value_oneoff_lapsed_customers": {
+      "value": 8,
+      "definition": "Top-20% customers with one purchase day and recency > 90 days (no usual gap; not in at-risk list)",
+      "source": "customers_rfm.csv"
+    },
+    "high_value_oneoff_lapsed_monetary": {
+      "value": 94746.36,
+      "definition": "Their monetary",
+      "source": "customers_rfm.csv"
+    },
+    "at_risk_count_range": {
+      "value": "27-207",
+      "definition": "Min-max at-risk count across the sensitivity grid",
+      "source": "at_risk_sensitivity.csv"
+    },
+    "at_risk_monetary_range": {
+      "value": "440,969-1,562,555",
+      "definition": "Min-max at-risk monetary across the grid",
+      "source": "at_risk_sensitivity.csv"
+    },
+    "repeat_customer_rate": {
+      "value": 0.7141,
+      "definition": "Customers buying on 2+ distinct days",
+      "source": "repeat_bands.csv"
+    },
+    "repeat_customer_revenue_share": {
+      "value": 0.9623,
+      "definition": "Identified revenue from repeat customers",
+      "source": "repeat_bands.csv"
+    },
+    "median_days_first_to_second": {
+      "value": 63.0,
+      "definition": "Median days from first to second purchase day (repeaters)",
+      "source": "repeat_first_to_second.csv"
+    },
+    "median_usual_gap_days": {
+      "value": 64.0,
+      "definition": "Median over repeaters of their median gap between consecutive purchase days",
+      "source": "customers_rfm.csv"
+    },
+    "median_mean_gap_days": {
+      "value": 79.6667,
+      "definition": "Median of (last-first)/(purchase days-1); matches median_days_between_purchases in outputs/analysis/metrics.json",
+      "source": "repeat_bands.csv"
+    },
+    "customers_single_order_dominated_top20": {
+      "value": 15,
+      "definition": "Top-20% customers whose largest purchase day is >=50% of monetary and >=\u00a35,000",
+      "source": "customers_rfm.csv"
+    },
+    "top20_share_starting_dec2009": {
+      "value": 0.4009,
+      "definition": "Share of top-20% customers first seen in Dec 2009 (history left-censored)",
+      "source": "customers_rfm.csv"
+    },
+    "repeat_rate_new_2010_2011": {
+      "value": 0.676,
+      "definition": "Repeat rate excluding customers first seen in Dec 2009",
+      "source": "customers_rfm.csv"
+    },
+    "repeat_within_90d": {
+      "value": 0.4024,
+      "definition": "Eligible new customers (first seen Jan 2010-Jun 2011) buying again within 90 days",
+      "source": "repeat_curve.csv"
+    },
+    "repeat_within_180d": {
+      "value": 0.5647,
+      "definition": "As above, within 180 days",
+      "source": "repeat_curve.csv"
+    },
+    "repeat_within_180d_FY1_new": {
+      "value": 0.633,
+      "definition": "New customers first buying Jan-Jun 2010 who bought again within 180 days",
+      "source": "repeat_by_acquisition_fy.csv"
+    },
+    "repeat_within_180d_FY2_new": {
+      "value": 0.5312,
+      "definition": "New customers first buying Jan-Jun 2011 who bought again within 180 days",
+      "source": "repeat_by_acquisition_fy.csv"
+    },
+    "default_at_risk_row": {
+      "value": {
+        "value_basis": "monetary",
+        "top_share": 0.2,
+        "gap_multiple": 2.0,
+        "min_recency_days": 90,
+        "customers": 151,
+        "monetary": 1204187.73,
+        "revenue_last_365d": 311825.46,
+        "revenue_FY2": 339546.07000000007,
+        "default": true
+      },
+      "definition": "Default row of the sensitivity grid",
+      "source": "at_risk_sensitivity.csv"
+    }
+  }
+}

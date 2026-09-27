@@ -1,7 +1,8 @@
 """Data-quality checks on data/processed/online_retail_II.csv.
 
 Runs every check the data-quality skill needs (schema, row counts, nulls, duplicates,
-negative quantities, invalid prices, cancellations, date ranges, suspicious values)
+negative quantities, invalid prices, cancellations, date ranges, suspicious values,
+revenue lines reversed by a later cancellation)
 and writes:
 
 - outputs/data_quality_report.md   the generated report (evidence tables per check)
@@ -250,6 +251,50 @@ def run_checks(raw):
           f"**Text and reference values:** {len(lower_desc):,} rows have lower-case descriptions (warehouse notes "
           f"such as 'damaged', 'check'); {multi_country} customers appear under more than one country; "
           f"non-standard country values:\n\n{md_table(odd_countries.rename('rows').to_frame())}")
+
+    # 10. Revenue lines reversed by a later cancellation ----------------------------------------
+    # A revenue line is "reversed" if the same customer has a C line within 24h after it that either
+    # (a) has the same StockCode and Price and exactly the opposite Quantity, or
+    # (b) is a manual 'M' line whose value equals minus the revenue line value.
+    # Rows without a Customer ID cannot be matched. Each revenue line counts once.
+    win = pd.Timedelta(hours=24)
+    r = rev.dropna(subset=["Customer ID"]).reset_index().rename(columns={"index": "rid"})
+    cc = d[d.is_cancel].dropna(subset=["Customer ID"])
+    m1 = r.merge(cc[["Customer ID", "StockCode", "Price", "Quantity", "InvoiceDate", "Invoice"]]
+                 .assign(Quantity=lambda x: -x.Quantity),
+                 on=["Customer ID", "StockCode", "Price", "Quantity"], suffixes=("", "_c"))
+    cm = cc[cc.StockCode == "M"][["Customer ID", "line_value", "InvoiceDate", "Invoice"]].assign(
+        line_value=lambda x: (-x.line_value).round(2))
+    m2 = r.assign(line_value=r.line_value.round(2)).merge(cm, on=["Customer ID", "line_value"], suffixes=("", "_c"))
+    matched = pd.concat([m1.assign(match="same code"), m2.assign(match="manual M")])
+    dt = matched.InvoiceDate_c - matched.InvoiceDate
+    matched = matched[(dt >= pd.Timedelta(0)) & (dt <= win)].assign(minutes=(dt[(dt >= pd.Timedelta(0)) & (dt <= win)]
+                                                                             .dt.total_seconds() / 60))
+    matched = matched.sort_values("minutes").drop_duplicates("rid")
+    rev_line = rev.set_index(rev.index).line_value
+    val = float(rev_line.loc[matched.rid].sum())
+    big_rev = matched[matched.line_value.abs() >= 5000]
+    big_val = float(rev_line.loc[big_rev.rid].sum())
+    top_rev = (matched.assign(value=rev_line.loc[matched.rid].values)
+               .nlargest(10, "value")[["Invoice", "Invoice_c", "match", "StockCode", "Quantity", "value",
+                                       "minutes", "Customer ID"]])
+    check("reversed_sales", "Revenue lines reversed by a later cancellation", "WARN",
+          f"{len(matched):,} revenue lines ({gbp(val)}, {pct(val / gross)} of revenue) cancelled by the same "
+          f"customer within 24h; {len(big_rev)} of them >= £5,000 worth {gbp(big_val)}",
+          {"reversed_rows": len(matched), "reversed_value": round(val, 2),
+           "reversed_share_of_revenue": float(val / gross),
+           "reversed_rows_same_code": int((matched.match == "same code").sum()),
+           "reversed_rows_manual_m": int((matched.match == "manual M").sum()),
+           "reversed_rows_ge_5000": len(big_rev), "reversed_value_ge_5000": round(big_val, 2),
+           "window_hours": 24},
+          f"Matching rule: same Customer ID, cancellation dated 0-24h after the sale, and either the same "
+          f"StockCode + Price with the opposite Quantity, or a manual `M` cancellation whose value equals the "
+          f"sale line value. Rows without a Customer ID cannot be matched, so this is a lower bound.\n\n"
+          f"- Matched revenue lines: {len(matched):,}, worth {gbp(val)} ({pct(val / gross)} of approved revenue).\n"
+          f"- The approved definition keeps these sales in revenue and drops the cancellations (C rows are "
+          f"excluded, and `M` is a non-product code), so revenue includes sales that were reversed.\n"
+          f"- Lines >= £5,000: {len(big_rev)}, worth {gbp(big_val)}.\n\n"
+          f"Largest reversed revenue lines:\n\n{md_table(top_rev, index=False)}")
 
 
 def write(out_dir):

@@ -12,7 +12,11 @@
       "Bash(git rm *)",
       "Bash(git clean *)",
       "Bash(find *-delete*)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(git rm *)",
+      "PowerShell(git clean *)",
+      "PowerShell(git push *)"
     ],
     "deny": [
       "Edit(/data/raw/**)"

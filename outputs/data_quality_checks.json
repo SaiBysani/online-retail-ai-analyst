@@ -1,0 +1,226 @@
+[
+  {
+    "id": "schema",
+    "title": "Schema and types",
+    "status": "PASS",
+    "headline": "9 columns; missing none; 0 unparseable dates; 0 non-integer quantities",
+    "numbers": {
+      "columns": [
+        "source_sheet",
+        "Invoice",
+        "StockCode",
+        "Description",
+        "Quantity",
+        "InvoiceDate",
+        "Price",
+        "Customer ID",
+        "Country"
+      ],
+      "missing": [],
+      "extra": [],
+      "unparseable_dates": 0,
+      "non_integer_quantities": 0,
+      "invoice_formats": {
+        "digits only": 1047871,
+        "C": 19494,
+        "A": 6
+      },
+      "malformed_customer_ids": 0
+    }
+  },
+  {
+    "id": "row_counts",
+    "title": "Row counts and revenue filter audit",
+    "status": "PASS",
+    "headline": "1,067,371 rows; 1,044,848 after the overlap; 1,015,071 revenue rows worth \u00a319,700,954",
+    "numbers": {
+      "rows": 1067371,
+      "rows_per_sheet": {
+        "Year 2009-2010": 525461,
+        "Year 2010-2011": 541910
+      },
+      "rows_after_overlap": 1044848,
+      "revenue_rows": 1015071,
+      "revenue_total": 19700954.44,
+      "audit": [
+        {
+          "step": "sheet overlap (2010-2011 copy)",
+          "rows": 22523,
+          "value": 377488.45
+        },
+        {
+          "step": "cancellations (C)",
+          "rows": 19165,
+          "value": -1465303.66
+        },
+        {
+          "step": "bad-debt adjustments (A)",
+          "rows": 6,
+          "value": -147614.08
+        },
+        {
+          "step": "Quantity <= 0 or Price <= 0",
+          "rows": 6024,
+          "value": 0.0
+        },
+        {
+          "step": "non-product codes",
+          "rows": 4582,
+          "value": 821725.42
+        }
+      ]
+    }
+  },
+  {
+    "id": "nulls",
+    "title": "Missing values",
+    "status": "WARN",
+    "headline": "Customer ID missing on 22.8% of rows (13.1% of revenue)",
+    "numbers": {
+      "nulls": {
+        "source_sheet": 0,
+        "Invoice": 0,
+        "StockCode": 0,
+        "Description": 4382,
+        "Quantity": 0,
+        "InvoiceDate": 0,
+        "Price": 0,
+        "Customer ID": 243007,
+        "Country": 0
+      },
+      "revenue_without_customer": 2576013.46,
+      "revenue_share_without_customer": 0.13075576961742366,
+      "blank_description_rows": 4382,
+      "blank_description_price0": 4382
+    }
+  },
+  {
+    "id": "duplicates",
+    "title": "Duplicates",
+    "status": "WARN",
+    "headline": "22,523 overlap rows (copies identical: True); 11,812 further exact duplicate lines, 11,731 of them inside revenue (\u00a357,093)",
+    "numbers": {
+      "overlap_rows_sheet1": 22523,
+      "overlap_rows_sheet2": 22523,
+      "overlap_copies_identical": true,
+      "overlap_window": [
+        "2010-12-01 00:00:00",
+        "2010-12-09 20:01:00"
+      ],
+      "exact_duplicates_after_overlap": 11812,
+      "exact_duplicates_in_revenue": 11731,
+      "exact_duplicate_revenue_value": 57092.82
+    }
+  },
+  {
+    "id": "negative_quantities",
+    "title": "Negative quantities",
+    "status": "WARN",
+    "headline": "22,557 negative-quantity rows: 19,164 cancellations, 3,393 price-0 stock adjustments, 0 unexplained",
+    "numbers": {
+      "negative_rows": 22557,
+      "by_kind": {
+        "cancellation (C invoice)": 19164,
+        "stock adjustment (no C, price 0)": 3393
+      },
+      "stock_adjustments_with_customer": 0,
+      "unexplained_negative_rows": 0,
+      "cancel_rows_positive_qty": 1
+    }
+  },
+  {
+    "id": "invalid_prices",
+    "title": "Invalid prices",
+    "status": "WARN",
+    "headline": "6,024 rows at \u00a30 (2,631 with positive quantity); 5 negative-price rows (invoices A506401, A516228, A528059, A563186, A563187)",
+    "numbers": {
+      "zero_price_rows": 6024,
+      "zero_price_positive_qty": 2631,
+      "zero_price_positive_qty_with_customer": 70,
+      "negative_price_rows": 5,
+      "negative_price_invoices": [
+        "A506401",
+        "A516228",
+        "A528059",
+        "A563186",
+        "A563187"
+      ],
+      "max_price": 38970.0,
+      "max_product_price": 1157.15
+    }
+  },
+  {
+    "id": "cancellations",
+    "title": "Cancellations",
+    "status": "WARN",
+    "headline": "8,292 C invoices, 19,165 lines, -\u00a31,465,304 (-\u00a3719,656 on products = 3.7% of revenue)",
+    "numbers": {
+      "cancel_invoices": 8292,
+      "cancel_rows": 19165,
+      "cancel_value": -1465303.66,
+      "cancel_value_products": -719656.34,
+      "cancel_value_products_share_of_revenue": 0.036529008896078644,
+      "cancel_invoice_share": 0.15463802170750812,
+      "cancel_rows_with_customer": 0.9624836942342813,
+      "cancel_number_matches_sales_invoice": 0.0
+    }
+  },
+  {
+    "id": "date_ranges",
+    "title": "Date ranges",
+    "status": "WARN",
+    "headline": "2009-12-01 07:45:00 to 2011-12-09 12:50:00; 25 months, missing months: none; last month has 8 trading days",
+    "numbers": {
+      "min": "2009-12-01 07:45:00",
+      "max": "2011-12-09 12:50:00",
+      "missing_months": [],
+      "by_sheet": {
+        "Year 2009-2010": {
+          "min": "2009-12-01 07:45:00",
+          "max": "2010-12-09 20:01:00"
+        },
+        "Year 2010-2011": {
+          "min": "2010-12-01 08:26:00",
+          "max": "2011-12-09 12:50:00"
+        }
+      },
+      "weekday_rows": {
+        "Thursday": 198149,
+        "Tuesday": 193663,
+        "Monday": 185206,
+        "Wednesday": 179296,
+        "Friday": 151601,
+        "Sunday": 136531,
+        "Saturday": 402
+      },
+      "last_month_trading_days": 8
+    }
+  },
+  {
+    "id": "suspicious_values",
+    "title": "Suspicious values",
+    "status": "WARN",
+    "headline": "15 lines with |Quantity| >= 10,000; 127 revenue rows on non-standard codes (\u00a31,186); 5,866 lower-case descriptions; 13 customers in >1 country",
+    "numbers": {
+      "extreme_quantity_lines": 15,
+      "top_revenue_line": 168469.6,
+      "nonstandard_code_revenue_rows": 127,
+      "nonstandard_code_revenue_value": 1185.6,
+      "lowercase_description_rows": 5866,
+      "customers_multi_country": 13,
+      "non_product_rows": 5832,
+      "non_product_value": -71535.98,
+      "revenue_quantity_percentiles": {
+        "count": 1015071.0,
+        "mean": 11.055325194001208,
+        "std": 128.0062788233458,
+        "min": 1.0,
+        "50%": 3.0,
+        "90%": 24.0,
+        "99%": 100.0,
+        "99.9%": 499.86000000010245,
+        "max": 80995.0
+      }
+    }
+  }
+]

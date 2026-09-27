@@ -120,6 +120,11 @@ def customer_tables(rev):
     size = rc_m.groupby("cohort")["Customer ID"].nunique()
     active = rc_m.groupby(["cohort", "age"])["Customer ID"].nunique().unstack(fill_value=0)
     cohorts = active[[a for a in (1, 3, 6, 12) if a in active]].div(size, axis=0)
+    # Blank out ages the data does not reach yet, so they are not read as 0% retention.
+    last = rc.month.max()
+    reach = pd.Series({c: (last - c).n for c in cohorts.index})
+    for a in cohorts.columns:
+        cohorts.loc[reach < a, a] = np.nan
     cohorts.columns = [f"m{a}" for a in cohorts.columns]
     cohorts.insert(0, "size", size)
     cohorts.index = cohorts.index.astype(str)
@@ -225,6 +230,16 @@ def main():
     total = rev.line_value.sum()
     canc_total = -canc.line_value.sum()
     repeaters = customers.purchase_days > 1
+    fy_ident = by_fy(rc)
+    fy_unident = fy_rev - fy_ident
+    uk_fy = countries.loc["United Kingdom", FULL_YEARS] / countries[FULL_YEARS].sum()
+    # Sales later reversed by a matching cancellation (anomaly_reversed_orders.csv), and those cancellations.
+    rev_keys = set(zip(reversed_.Invoice, reversed_.StockCode))
+    canc_keys = set(zip(reversed_.Invoice_cancel, reversed_.StockCode))
+    is_rev = pd.Series([k in rev_keys for k in zip(rev.Invoice, rev.StockCode)], index=rev.index)
+    is_canc = pd.Series([k in canc_keys for k in zip(canc.Invoice, canc.StockCode)], index=canc.index)
+    fy_reversed = by_fy(rev[is_rev])
+    fy_rev_x, fy_canc_x = by_fy(rev[~is_rev]), -by_fy(canc[~is_canc])
 
     def m(value, definition, source):
         return {"value": value, "definition": definition, "source": source}
@@ -238,6 +253,34 @@ def main():
             "revenue_FY1": m(round(fy_rev.FY1, 2), "Revenue Dec 2009-Nov 2010", "monthly.csv"),
             "revenue_FY2": m(round(fy_rev.FY2, 2), "Revenue Dec 2010-Nov 2011", "monthly.csv"),
             "revenue_growth_FY2_vs_FY1": m(change(fy_rev.FY1, fy_rev.FY2), "FY2 / FY1 - 1", "monthly.csv"),
+            "revenue_identified_FY1": m(round(fy_ident.FY1, 2), "Revenue with a Customer ID, FY1",
+                                        "customer_lifecycle.csv"),
+            "revenue_identified_FY2": m(round(fy_ident.FY2, 2), "Revenue with a Customer ID, FY2",
+                                        "customer_lifecycle.csv"),
+            "revenue_identified_growth": m(change(fy_ident.FY1, fy_ident.FY2),
+                                           "Identified revenue FY2 / FY1 - 1", "customer_lifecycle.csv"),
+            "revenue_unidentified_FY1": m(round(fy_unident.FY1, 2), "Revenue without a Customer ID, FY1",
+                                          "monthly.csv"),
+            "revenue_unidentified_FY2": m(round(fy_unident.FY2, 2), "Revenue without a Customer ID, FY2",
+                                          "monthly.csv"),
+            "revenue_unidentified_growth": m(change(fy_unident.FY1, fy_unident.FY2),
+                                             "Unidentified revenue FY2 / FY1 - 1", "monthly.csv"),
+            "reversed_orders_revenue_FY1": m(round(fy_reversed.FY1, 2), "Revenue on reversed big orders, FY1",
+                                             "anomaly_reversed_orders.csv"),
+            "reversed_orders_revenue_FY2": m(round(fy_reversed.FY2, 2), "Revenue on reversed big orders, FY2",
+                                             "anomaly_reversed_orders.csv"),
+            "revenue_growth_excl_reversed": m(change(fy_rev_x.FY1, fy_rev_x.FY2),
+                                              "FY2 / FY1 - 1 with reversed big orders removed from both years",
+                                              "anomaly_reversed_orders.csv"),
+            "cancel_rate_FY1_excl_reversed": m(float(fy_canc_x.FY1 / (fy_rev_x.FY1 + fy_canc_x.FY1)),
+                                               "FY1 cancellation rate without the reversed big orders and their "
+                                               "cancellations", "anomaly_reversed_orders.csv"),
+            "cancel_rate_FY2_excl_reversed": m(float(fy_canc_x.FY2 / (fy_rev_x.FY2 + fy_canc_x.FY2)),
+                                               "As above, FY2", "anomaly_reversed_orders.csv"),
+            "orders_growth": m(change(fy_orders.FY1, fy_orders.FY2), "Orders FY2 / FY1 - 1", "monthly.csv"),
+            "aov_growth": m(change(fy_aov.FY1, fy_aov.FY2), "AOV FY2 / FY1 - 1", "monthly.csv"),
+            "uk_share_FY1": m(float(uk_fy.FY1), "UK share of FY1 revenue", "countries.csv"),
+            "uk_share_FY2": m(float(uk_fy.FY2), "UK share of FY2 revenue", "countries.csv"),
             "orders_FY1": m(int(fy_orders.FY1), "Distinct revenue invoices", "monthly.csv"),
             "orders_FY2": m(int(fy_orders.FY2), "Distinct revenue invoices", "monthly.csv"),
             "aov_FY1": m(round(fy_aov.FY1, 2), "Revenue / orders", "monthly.csv"),

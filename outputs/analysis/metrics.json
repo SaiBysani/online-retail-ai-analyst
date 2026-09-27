@@ -1,0 +1,289 @@
+{
+  "assumptions": [
+    "Revenue = approved CLAUDE.md definition; exact duplicate lines are kept, as the definition does.",
+    "FY1 = Dec 2009-Nov 2010, FY2 = Dec 2010-Nov 2011; Dec 2011 (1-9 Dec) is partial and excluded from year-on-year comparisons.",
+    "Customer metrics use revenue rows with a Customer ID only.",
+    "Order = one revenue invoice; AOV = revenue / revenue invoices.",
+    "Repeat customer = bought on 2 or more distinct days (same-day split invoices count once).",
+    "Cancellation value = C-invoice lines on product codes (non-product codes excluded, to match revenue); cancellation rate = cancellation value / (revenue + cancellation value)."
+  ],
+  "revenue_filter_audit": [
+    {
+      "step": "sheet overlap (2010-2011 copy)",
+      "rows": 22523,
+      "value": 377488.45
+    },
+    {
+      "step": "cancellations (C)",
+      "rows": 19165,
+      "value": -1465303.66
+    },
+    {
+      "step": "bad-debt adjustments (A)",
+      "rows": 6,
+      "value": -147614.08
+    },
+    {
+      "step": "Quantity <= 0 or Price <= 0",
+      "rows": 6024,
+      "value": 0.0
+    },
+    {
+      "step": "non-product codes",
+      "rows": 4582,
+      "value": 821725.42
+    }
+  ],
+  "tables": [
+    "anomaly_days.csv",
+    "anomaly_price_outliers.csv",
+    "anomaly_reversed_orders.csv",
+    "anomaly_top_lines.csv",
+    "cohort_retention.csv",
+    "countries.csv",
+    "customer_concentration.csv",
+    "customer_lifecycle.csv",
+    "monthly.csv",
+    "product_movers.csv",
+    "products.csv",
+    "products_high_cancel.csv",
+    "repeat_purchases.csv"
+  ],
+  "metrics": {
+    "revenue_total": {
+      "value": 19700954.44,
+      "definition": "Approved revenue, 2009-12-01 to 2011-12-09",
+      "source": "revenue_filter_audit"
+    },
+    "revenue_FY1": {
+      "value": 9429521.38,
+      "definition": "Revenue Dec 2009-Nov 2010",
+      "source": "monthly.csv"
+    },
+    "revenue_FY2": {
+      "value": 9655939.79,
+      "definition": "Revenue Dec 2010-Nov 2011",
+      "source": "monthly.csv"
+    },
+    "revenue_growth_FY2_vs_FY1": {
+      "value": 0.02401165455547205,
+      "definition": "FY2 / FY1 - 1",
+      "source": "monthly.csv"
+    },
+    "revenue_identified_FY1": {
+      "value": 8363874.33,
+      "definition": "Revenue with a Customer ID, FY1",
+      "source": "customer_lifecycle.csv"
+    },
+    "revenue_identified_FY2": {
+      "value": 8247836.22,
+      "definition": "Revenue with a Customer ID, FY2",
+      "source": "customer_lifecycle.csv"
+    },
+    "revenue_identified_growth": {
+      "value": -0.013873727105605638,
+      "definition": "Identified revenue FY2 / FY1 - 1",
+      "source": "customer_lifecycle.csv"
+    },
+    "revenue_unidentified_FY1": {
+      "value": 1065647.05,
+      "definition": "Revenue without a Customer ID, FY1",
+      "source": "monthly.csv"
+    },
+    "revenue_unidentified_FY2": {
+      "value": 1408103.57,
+      "definition": "Revenue without a Customer ID, FY2",
+      "source": "monthly.csv"
+    },
+    "revenue_unidentified_growth": {
+      "value": 0.32136017267630823,
+      "definition": "Unidentified revenue FY2 / FY1 - 1",
+      "source": "monthly.csv"
+    },
+    "reversed_orders_revenue_FY1": {
+      "value": 15818.4,
+      "definition": "Revenue on reversed big orders, FY1",
+      "source": "anomaly_reversed_orders.csv"
+    },
+    "reversed_orders_revenue_FY2": {
+      "value": 122693.0,
+      "definition": "Revenue on reversed big orders, FY2",
+      "source": "anomaly_reversed_orders.csv"
+    },
+    "revenue_growth_excl_reversed": {
+      "value": 0.012698914577396136,
+      "definition": "FY2 / FY1 - 1 with reversed big orders removed from both years",
+      "source": "anomaly_reversed_orders.csv"
+    },
+    "cancel_rate_FY1_excl_reversed": {
+      "value": 0.024955076655543088,
+      "definition": "FY1 cancellation rate without the reversed big orders and their cancellations",
+      "source": "anomaly_reversed_orders.csv"
+    },
+    "cancel_rate_FY2_excl_reversed": {
+      "value": 0.02258631665842968,
+      "definition": "As above, FY2",
+      "source": "anomaly_reversed_orders.csv"
+    },
+    "orders_growth": {
+      "value": -0.03981157878741837,
+      "definition": "Orders FY2 / FY1 - 1",
+      "source": "monthly.csv"
+    },
+    "aov_growth": {
+      "value": 0.06646948862629554,
+      "definition": "AOV FY2 / FY1 - 1",
+      "source": "monthly.csv"
+    },
+    "uk_share_FY1": {
+      "value": 0.8599343437725998,
+      "definition": "UK share of FY1 revenue",
+      "source": "countries.csv"
+    },
+    "uk_share_FY2": {
+      "value": 0.8466580320298374,
+      "definition": "UK share of FY2 revenue",
+      "source": "countries.csv"
+    },
+    "orders_FY1": {
+      "value": 19743,
+      "definition": "Distinct revenue invoices",
+      "source": "monthly.csv"
+    },
+    "orders_FY2": {
+      "value": 18957,
+      "definition": "Distinct revenue invoices",
+      "source": "monthly.csv"
+    },
+    "aov_FY1": {
+      "value": 477.61,
+      "definition": "Revenue / orders",
+      "source": "monthly.csv"
+    },
+    "aov_FY2": {
+      "value": 509.36,
+      "definition": "Revenue / orders",
+      "source": "monthly.csv"
+    },
+    "customers_FY1": {
+      "value": 4239,
+      "definition": "Distinct Customer IDs with revenue",
+      "source": "customer_lifecycle.csv"
+    },
+    "customers_FY2": {
+      "value": 4293,
+      "definition": "Distinct Customer IDs with revenue",
+      "source": "customer_lifecycle.csv"
+    },
+    "customer_retention_FY1_to_FY2": {
+      "value": 0.638829912715263,
+      "definition": "FY1 customers who also bought in FY2",
+      "source": "customer_lifecycle.csv"
+    },
+    "new_customers_FY2": {
+      "value": 1585,
+      "definition": "FY2 customers not seen in FY1",
+      "source": "customer_lifecycle.csv"
+    },
+    "revenue_share_without_customer_id": {
+      "value": 0.13075576961742366,
+      "definition": "Revenue on rows with no Customer ID",
+      "source": "data_quality_checks.json"
+    },
+    "top_10pct_customer_share": {
+      "value": 0.6377645273496294,
+      "definition": "Share of identified revenue from the top 10% of customers",
+      "source": "customer_concentration.csv"
+    },
+    "repeat_customer_rate": {
+      "value": 0.7141148325358851,
+      "definition": "Customers buying on 2+ distinct days",
+      "source": "repeat_purchases.csv"
+    },
+    "repeat_customer_revenue_share": {
+      "value": 0.9622784200684587,
+      "definition": "Share of identified revenue from repeat customers",
+      "source": "repeat_purchases.csv"
+    },
+    "median_days_between_purchases": {
+      "value": 79.66666666666667,
+      "definition": "Median over repeat customers of (last - first purchase) / (purchase days - 1)",
+      "source": "repeat_purchases.csv"
+    },
+    "peak_season_share_FY2": {
+      "value": 0.3722983767693937,
+      "definition": "Sep-Nov 2011 revenue / FY2 revenue",
+      "source": "monthly.csv"
+    },
+    "uk_revenue_share": {
+      "value": 0.8556098635391798,
+      "definition": "UK share of total revenue",
+      "source": "countries.csv"
+    },
+    "non_uk_growth_FY2_vs_FY1": {
+      "value": 0.12107397747086668,
+      "definition": "Non-UK FY2 / FY1 - 1",
+      "source": "countries.csv"
+    },
+    "uk_growth_FY2_vs_FY1": {
+      "value": 0.008202194155905174,
+      "definition": "UK FY2 / FY1 - 1",
+      "source": "countries.csv"
+    },
+    "countries": {
+      "value": 43,
+      "definition": "Country values with revenue",
+      "source": "countries.csv"
+    },
+    "cancel_value_total": {
+      "value": 719656.34,
+      "definition": "Cancelled product value (C invoices, product codes)",
+      "source": "monthly.csv"
+    },
+    "cancel_rate_total": {
+      "value": 0.03524166577352492,
+      "definition": "Cancelled value / (revenue + cancelled value)",
+      "source": "monthly.csv"
+    },
+    "cancel_rate_FY1": {
+      "value": 0.024914256503423517,
+      "definition": "As above, FY1",
+      "source": "monthly.csv"
+    },
+    "cancel_rate_FY2": {
+      "value": 0.030580420872701103,
+      "definition": "As above, FY2",
+      "source": "monthly.csv"
+    },
+    "products_sold": {
+      "value": 4895,
+      "definition": "Stock codes with revenue",
+      "source": "products.csv"
+    },
+    "a_class_products": {
+      "value": 1040,
+      "definition": "Codes making up the first 80% of revenue",
+      "source": "products.csv"
+    },
+    "top_product": {
+      "value": "22423 REGENCY CAKESTAND 3 TIER",
+      "definition": "Highest-revenue stock code",
+      "source": "products.csv"
+    },
+    "top_product_revenue": {
+      "value": 331084.27,
+      "definition": "",
+      "source": "products.csv"
+    },
+    "anomaly_days": {
+      "value": 13,
+      "definition": "Days with |robust z| >= 4 (median \u00a328,234, scaled MAD \u00a312,520)",
+      "source": "anomaly_days.csv"
+    },
+    "reversed_big_orders_value": {
+      "value": 306981.0,
+      "definition": "Value of >=\u00a35K lines later cancelled with the same code, quantity and customer (still counted in revenue)",
+      "source": "anomaly_reversed_orders.csv"
+    }
+  }
+}

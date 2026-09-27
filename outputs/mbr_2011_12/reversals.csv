@@ -1,0 +1,2 @@
+Invoice,InvoiceDate,StockCode,Description,Quantity,line_value,Customer ID,Invoice_cancel,StockCode_cancel,InvoiceDate_cancel,hours_to_cancel,within_24h,window
+581483,2011-12-09 09:15:00,23843,"PAPER CRAFT , LITTLE BIRDIE",80995,168469.6000,16446,C581484,23843,2011-12-09 09:27:00,0.2000,True,current

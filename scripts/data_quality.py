@@ -2,7 +2,7 @@
 
 Runs every check the data-quality skill needs (schema, row counts, nulls, duplicates,
 negative quantities, invalid prices, cancellations, date ranges, suspicious values,
-revenue lines reversed by a later cancellation)
+revenue lines reversed by a later cancellation, review windows for the Dec 2011 MBR)
 and writes:
 
 - outputs/data_quality_report.md   the generated report (evidence tables per check)
@@ -295,6 +295,103 @@ def run_checks(raw):
           f"excluded, and `M` is a non-product code), so revenue includes sales that were reversed.\n"
           f"- Lines >= £5,000: {len(big_rev)}, worth {gbp(big_val)}.\n\n"
           f"Largest reversed revenue lines:\n\n{md_table(top_rev, index=False)}")
+
+    # 11. Review windows (MBR: Dec 2011 MTD vs 1-9 Dec 2010 vs 1-9 Nov 2011, all to 12:50 on the 9th) --------
+    # Windows are inclusive of both endpoints: [start 00:00, end 12:50]. Uses the approved definition
+    # unchanged; the "excluding reversed lines" figure is a sensitivity only, not a revenue rule.
+    windows = [("Dec 2011 MTD", "2011-12-01", "2011-12-09 12:50"),
+               ("Dec 2010 same window", "2010-12-01", "2010-12-09 12:50"),
+               ("Nov 2011 same window", "2011-11-01", "2011-11-09 12:50")]
+    rev_key = rev.index
+    reversed_ids = set(matched.rid)
+    wrows, wnums, wextreme, wrev_tbl = [], {}, [], []
+    for name, s, e in windows:
+        s, e = pd.Timestamp(s), pd.Timestamp(e)
+        in_all = df[(df.InvoiceDate >= s) & (df.InvoiceDate <= e)]
+        w = d[(d.InvoiceDate >= s) & (d.InvoiceDate <= e)]
+        wr = rev[(rev.InvoiceDate >= s) & (rev.InvoiceDate <= e)]
+        wneg = w[w.Quantity < 0]
+        k = pd.Series("other", index=wneg.index)
+        k[wneg.is_cancel] = "cancellation"
+        k[~wneg.is_cancel & (wneg.Price == 0)] = "stock adjustment"
+        k[~wneg.is_cancel & wneg.is_bad_debt] = "bad-debt"
+        wc = w[w.is_cancel & ~w.is_non_product]
+        wdup = wr.duplicated(subset=key, keep="first")
+        wm = matched[matched.rid.isin(wr.index)]
+        wm_val = float(rev.line_value.loc[wm.rid].sum())
+        wm_out = wm[wm.InvoiceDate_c > e]
+        last_day = w[w.InvoiceDate.dt.date == e.date()]
+        days = sorted(w.InvoiceDate.dt.date.unique())
+        nums = {"start": str(s), "end": str(e), "rows_all_sheets": len(in_all),
+                "rows_by_sheet_before_dedup": in_all.source_sheet.value_counts().to_dict(),
+                "rows_after_dedup": len(w),
+                "rows_after_dedup_from_sheet2": int((w.source_sheet == SHEETS[1]).sum()),
+                "revenue_rows": len(wr), "revenue": round(float(wr.line_value.sum()), 2),
+                "revenue_no_customer": round(float(wr.line_value[wr["Customer ID"].isna()].sum()), 2),
+                "revenue_rows_no_customer": int(wr["Customer ID"].isna().sum()),
+                "customers": int(wr["Customer ID"].nunique()),
+                "trading_days": len(days), "weekdays": [pd.Timestamp(x).day_name()[:3] for x in days],
+                "last_day_rows": len(last_day),
+                "last_day_last_time": str(last_day.InvoiceDate.max()) if len(last_day) else None,
+                "negative_rows": len(wneg), "negative_by_kind": k.value_counts().to_dict(),
+                "unexplained_negative_rows": int((k == "other").sum()),
+                "cancel_rows_products": len(wc), "cancel_value_products": round(float(wc.line_value.sum()), 2),
+                "exact_duplicates_in_revenue": int(wdup.sum()),
+                "exact_duplicate_revenue_value": round(float(wr.line_value[wdup].sum()), 2),
+                "reversed_rows": len(wm), "reversed_value": round(wm_val, 2),
+                "reversed_rows_cancel_after_window_end": len(wm_out),
+                "revenue_excl_reversed_sensitivity": round(float(wr.line_value.sum()) - wm_val, 2),
+                "max_abs_quantity": int(w.Quantity.abs().max())}
+        wnums[name] = nums
+        wrows.append({"window": name, "rows (dedup)": len(w), "revenue rows": len(wr),
+                      "revenue": gbp(wr.line_value.sum()), "no-customer revenue": gbp(nums["revenue_no_customer"]),
+                      "trading days": len(days), "neg rows": len(wneg),
+                      "unexplained neg": nums["unexplained_negative_rows"],
+                      "reversed lines": len(wm), "reversed £": gbp(wm_val),
+                      "revenue excl. reversed (sensitivity)": gbp(nums["revenue_excl_reversed_sensitivity"])})
+        big_w = w[(w.Quantity.abs() >= 1000) | (w.line_value.abs() >= 2000)]
+        for _, x in big_w.iterrows():
+            wextreme.append({"window": name, "Invoice": x.Invoice, "StockCode": x.StockCode,
+                             "Quantity": int(x.Quantity), "Price": x.Price, "line_value": round(x.line_value, 2),
+                             "InvoiceDate": str(x.InvoiceDate), "Customer ID": x["Customer ID"],
+                             "in revenue": bool(x.name in rev_key), "reversed": bool(x.name in reversed_ids)})
+        for _, x in wm.nlargest(5, "line_value").iterrows():
+            wrev_tbl.append({"window": name, "Invoice": x.Invoice, "Invoice_c": x.Invoice_c, "StockCode": x.StockCode,
+                             "Quantity": int(x.Quantity), "value": round(float(rev.line_value.loc[x.rid]), 2),
+                             "minutes": x.minutes, "cancel after window end": bool(x.InvoiceDate_c > e)})
+    # Overlap check restricted to the Dec 2010 window.
+    s10, e10 = pd.Timestamp("2010-12-01"), pd.Timestamp("2010-12-09 12:50")
+    w1 = df[(df.source_sheet == SHEETS[0]) & (df.InvoiceDate >= s10) & (df.InvoiceDate <= e10)]
+    w2 = df[(df.source_sheet == SHEETS[1]) & (df.InvoiceDate >= s10) & (df.InvoiceDate <= e10)]
+    w_same = (w1[key].astype(str).sort_values(key).reset_index(drop=True)
+              .equals(w2[key].astype(str).sort_values(key).reset_index(drop=True)))
+    dec10 = wnums["Dec 2010 same window"]
+    one_copy = dec10["rows_after_dedup"] == len(w1) and dec10["rows_after_dedup_from_sheet2"] == 0
+    unexpl = sum(v["unexplained_negative_rows"] for v in wnums.values())
+    wstatus = "FAIL" if (not w_same or not one_copy or unexpl) else "WARN"
+    dmtd = wnums["Dec 2011 MTD"]
+    check("review_windows", "Review windows (1-9 Dec 2011 / 1-9 Dec 2010 / 1-9 Nov 2011, to 12:50)", wstatus,
+          f"Dec 2010 window overlap copies identical: {w_same}, one copy kept: {one_copy}; "
+          f"{unexpl} unexplained negative rows in windows; Dec 2011 MTD revenue {gbp(dmtd['revenue'])} includes "
+          f"{gbp(dmtd['reversed_value'])} reversed within 24h",
+          {"windows": wnums, "dec2010_overlap_rows_sheet1": len(w1), "dec2010_overlap_rows_sheet2": len(w2),
+           "dec2010_overlap_copies_identical": bool(w_same), "dec2010_dedup_leaves_one_copy": bool(one_copy),
+           "unexplained_negative_rows_in_windows": unexpl,
+           "extreme_lines": wextreme, "largest_reversed": wrev_tbl},
+          f"Windows are inclusive, 00:00 on the 1st to 12:50 on the 9th (the last timestamp in the data is "
+          f"2011-12-09 12:50). Approved revenue definition unchanged; the 'excl. reversed' column is a sensitivity "
+          f"only.\n\n{md_table(pd.DataFrame(wrows), index=False)}\n\n"
+          f"- Dec 2010 window vs sheet overlap: sheet 1 has {len(w1):,} rows, sheet 2 has {len(w2):,}; identical as "
+          f"multisets: **{w_same}**. After deduplication {dec10['rows_after_dedup']:,} rows remain, "
+          f"{dec10['rows_after_dedup_from_sheet2']} from sheet 2: exactly one copy kept: **{one_copy}**.\n"
+          f"- Weekdays covered: " + "; ".join(f"{n}: {', '.join(v['weekdays'])}" for n, v in wnums.items()) + ".\n"
+          f"- Last day of each window (the 9th, to 12:50): " + "; ".join(
+              f"{n}: {v['last_day_rows']:,} rows, last {v['last_day_last_time']}" for n, v in wnums.items()) + ".\n"
+          f"- Negative rows by kind: " + "; ".join(f"{n}: {v['negative_by_kind']}" for n, v in wnums.items()) + ".\n\n"
+          f"Extreme lines in the windows (|Quantity| >= 1,000 or |line value| >= £2,000):\n\n"
+          f"{md_table(pd.DataFrame(wextreme), index=False) if wextreme else 'none'}\n\n"
+          f"Largest revenue lines in the windows reversed by the same customer within 24h (check 10 rule):\n\n"
+          f"{md_table(pd.DataFrame(wrev_tbl), index=False) if wrev_tbl else 'none'}")
 
 
 def write(out_dir):

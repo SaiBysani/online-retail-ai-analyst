@@ -216,3 +216,125 @@ nm_1mo = f11[(f11 >= "2011-01-01") & (f11 < "2011-12-01")].dt.to_period("M").val
 nm_2010 = first[(first >= "2010-01-01") & (first < "2010-12-01")].dt.to_period("M").value_counts().sort_index()
 print(pd.DataFrame({"2010 (1mo lookback)": nm_2010.values, "2011 full lookback": nm_full.values,
                     "2011 1mo lookback": nm_1mo.values}, index=[p.strftime("%b") for p in nm_full.index]).to_string())
+
+
+# =====================================================================================
+# MBR Dec 2011 month-to-date recheck (outputs/mbr_2011_12/). Independent of retail_common,
+# retail_analysis and mbr_analysis. Uses d / rev / canc / nonprod built above.
+# Assumptions:
+# - Windows inclusive: [1st 00:00, 9th 12:50] for 2011-12, 2010-12, 2011-11 (user-confirmed scope).
+# - Cancellation value = -sum(val) of C rows on product codes (overlap removed) in the window;
+#   rate = cancel / (revenue + cancel), the report's stated basis.
+# - Order = distinct revenue invoice. Customers = distinct Customer ID on revenue rows.
+# - New (all history) = no revenue row before window start; new (12m) = no revenue row in
+#   [start - 12 months, start). Returning = customers - new, under each definition.
+# - Reversed order = invoice 581483 line(s) found in the data; its cancellation found as a C row by
+#   the same customer, same StockCode, opposite quantity, after the sale.
+# =====================================================================================
+print("\n== MBR Dec 2011 MTD windows")
+WIN = {"Dec11": ("2011-12-01", "2011-12-09 12:50"), "Dec10": ("2010-12-01", "2010-12-09 12:50"),
+       "Nov11": ("2011-11-01", "2011-11-09 12:50")}
+
+
+def inwin(f, w):
+    s, e = pd.Timestamp(w[0]), pd.Timestamp(w[1])
+    return f[(f.InvoiceDate >= s) & (f.InvoiceDate <= e)]
+
+
+sale = rev[rev.Invoice == "581483"]
+print(sale[["Invoice", "StockCode", "Description", "Quantity", "Price", "val", "InvoiceDate", "Customer ID"]].to_string())
+sale_c = d[is_c & (d["Customer ID"] == "16446") & (d.StockCode == "23843")]
+print(sale_c[["Invoice", "StockCode", "Quantity", "Price", "val", "InvoiceDate"]].to_string())
+show("mbr_reversed_value", float(sale.val.sum()))
+show("mbr_reversed_share_of_Dec11_rev", float(sale.val.sum()) / float(inwin(rev, WIN["Dec11"]).val.sum()))
+rev_x = rev.drop(sale.index)
+canc_x = canc.drop(canc.index.intersection(sale_c.index))
+
+res = {}
+for k, w in WIN.items():
+    r, c, rx, cx = inwin(rev, w), inwin(canc, w), inwin(rev_x, w), inwin(canc_x, w)
+    R_, C_ = r.val.sum(), -c.val.sum()
+    Rx, Cx = rx.val.sum(), -cx.val.sum()
+    ids = set(r["Customer ID"].dropna())
+    s = pd.Timestamp(w[0])
+    before_all = set(rev[rev.InvoiceDate < s]["Customer ID"].dropna())
+    before_12 = set(rev[(rev.InvoiceDate < s) & (rev.InvoiceDate >= s - pd.DateOffset(months=12))]["Customer ID"].dropna())
+    new_all, new_12 = ids - before_all, ids - before_12
+    idr = rx.dropna(subset=["Customer ID"])
+    cust = idr.groupby("Customer ID").val.sum().sort_values(ascending=False)
+    uk = r.Country == "United Kingdom"
+    x = dict(revenue=R_, orders=r.Invoice.nunique(), aov=R_ / r.Invoice.nunique(), customers=len(ids),
+             cancel_value=C_, cancel_rate=C_ / (R_ + C_),
+             uk=r[uk].val.sum(), intl=r[~uk].val.sum(), nl=r[r.Country == "Netherlands"].val.sum(),
+             nl_customers=sorted(r[r.Country == "Netherlands"]["Customer ID"].dropna().unique()),
+             nl_orders=r[r.Country == "Netherlands"].Invoice.nunique(),
+             revenue_x=Rx, orders_x=rx.Invoice.nunique(), aov_x=Rx / rx.Invoice.nunique(),
+             cancel_rate_x=Cx / (Rx + Cx), uk_x=rx[rx.Country == "United Kingdom"].val.sum(),
+             unidentified=r[r["Customer ID"].isna()].val.sum(),
+             unident_share_reported=r[r["Customer ID"].isna()].val.sum() / R_,
+             unident_share_x=rx[rx["Customer ID"].isna()].val.sum() / Rx,
+             new_all=len(new_all), returning_all=len(ids - new_all),
+             new_12=len(new_12), returning_12=len(ids - new_12),
+             reactivated=len((ids - new_all) & new_12),
+             rev_new12_x=idr[idr["Customer ID"].isin(new_12)].val.sum(),
+             rev_ret12_x=idr[~idr["Customer ID"].isin(new_12)].val.sum(),
+             rev_newall_x=idr[idr["Customer ID"].isin(new_all)].val.sum(),
+             top10_share_x=cust.head(10).sum() / cust.sum(),
+             trading_days=r.InvoiceDate.dt.date.nunique())
+    res[k] = x
+    for kk, v in x.items():
+        show(f"mbr_{k}_{kk}", float(v) if isinstance(v, (np.floating, np.integer)) else v)
+
+print("== MBR comparisons")
+for a, b in [("Dec11", "Dec10"), ("Dec11", "Nov11")]:
+    for kk in ["revenue", "orders", "customers", "revenue_x", "aov_x", "uk_x", "intl", "returning_all",
+               "returning_12", "rev_ret12_x", "rev_new12_x", "unidentified"]:
+        show(f"mbr_{a}_vs_{b}_{kk}", res[a][kk] / res[b][kk] - 1)
+show("mbr_intl_exNL_Dec11", res["Dec11"]["intl"] - res["Dec11"]["nl"])
+show("mbr_intl_exNL_Dec10", res["Dec10"]["intl"] - res["Dec10"]["nl"])
+show("mbr_intl_exNL_growth", (res["Dec11"]["intl"] - res["Dec11"]["nl"]) / (res["Dec10"]["intl"] - res["Dec10"]["nl"]) - 1)
+gain_id = (res["Dec11"]["rev_new12_x"] + res["Dec11"]["rev_ret12_x"]) - (res["Dec10"]["rev_new12_x"] + res["Dec10"]["rev_ret12_x"])
+show("mbr_identified_gain_x", gain_id)
+show("mbr_new12_share_of_identified_gain_x", (res["Dec11"]["rev_new12_x"] - res["Dec10"]["rev_new12_x"]) / gain_id)
+show("mbr_unidentified_gain", res["Dec11"]["unidentified"] - res["Dec10"]["unidentified"])
+show("mbr_total_gain_x", res["Dec11"]["revenue_x"] - res["Dec10"]["revenue_x"])
+nl = inwin(rev, WIN["Dec11"])
+nl = nl[nl.Country == "Netherlands"]
+print("  NL Dec11 by customer:", nl.groupby("Customer ID").agg(v=("val", "sum"), o=("Invoice", "nunique")).to_dict())
+c16000 = inwin(rev, WIN["Dec11"])
+show("mbr_rev_16000", float(c16000[c16000["Customer ID"] == "16000"].val.sum()))
+show("mbr_first_16000", str(rev[rev["Customer ID"] == "16000"].InvoiceDate.min()))
+
+print("== MBR cumulative to 8 Dec (end of day 8)")
+for k, w in [("Dec11", ("2011-12-01", "2011-12-08 23:59:59")), ("Dec10", ("2010-12-01", "2010-12-08 23:59:59"))]:
+    show(f"mbr_cum8_{k}", float(inwin(rev_x, w).val.sum()))
+print("  daily revenue by window (excl. 581483):")
+for k, w in WIN.items():
+    r = inwin(rev_x, w)
+    dd = r.groupby(r.InvoiceDate.dt.date).val.sum()
+    print("  ", k, {str(i): round(v) for i, v in dd.items()},
+          "weekdays:", [pd.Timestamp(i).day_name()[:3] for i in dd.index])
+
+print("== MBR first-9-days (to 12:50) window, every month, YoY (excl. 581483 only)")
+rows = []
+for m in pd.period_range("2009-12", "2011-12", freq="M"):
+    s = m.to_timestamp()
+    w = (s, s + pd.Timedelta(days=8, hours=12, minutes=50))
+    r = inwin(rev_x, w)
+    rows.append((str(m), r.val.sum(), r.InvoiceDate.dt.date.nunique()))
+t = pd.DataFrame(rows, columns=["month", "rev", "days"]).set_index("month")
+t["yoy"] = t.rev / t.rev.shift(12) - 1
+t["days_ly"] = t.days.shift(12)
+print(t.round(3).to_string())
+show("mbr_max_yoy_month_before_Dec11", f"{t.yoy.iloc[:-1].idxmax()} {t.yoy.iloc[:-1].max():.4f}")
+
+print("== MBR broad 24h any-size reversal sensitivity (same customer, code, opposite qty, same price)")
+cc = d[is_c & d["Customer ID"].notna()][["Customer ID", "StockCode", "Quantity", "Price", "InvoiceDate"]]
+for k, w in WIN.items():
+    r = inwin(rev, w).dropna(subset=["Customer ID"]).reset_index()
+    mm = r.merge(cc.assign(q=-cc.Quantity), left_on=["Customer ID", "StockCode", "Quantity", "Price"],
+                 right_on=["Customer ID", "StockCode", "q", "Price"], suffixes=("", "_c"))
+    mm = mm[(mm.InvoiceDate_c >= mm.InvoiceDate) & (mm.InvoiceDate_c <= mm.InvoiceDate + pd.Timedelta("24h"))]
+    rv_ = mm.drop_duplicates("index")
+    show(f"mbr_broad24_{k}_lines", len(rv_)); show(f"mbr_broad24_{k}_value", float(rv_.val.sum()))
+    show(f"mbr_broad24_{k}_rev_excl", float(inwin(rev, w).val.sum() - rv_.val.sum()))

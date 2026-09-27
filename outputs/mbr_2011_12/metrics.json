@@ -1,0 +1,360 @@
+{
+  "generated": "2026-09-27T20:22:29",
+  "data_last_timestamp": "2011-12-09 12:50:00",
+  "windows": {
+    "current": {
+      "label": "Dec 2011",
+      "start": "2011-12-01 00:00:00",
+      "end": "2011-12-09 12:50:00"
+    },
+    "prior_year": {
+      "label": "Dec 2010",
+      "start": "2010-12-01 00:00:00",
+      "end": "2010-12-09 12:50:00"
+    },
+    "prior_month": {
+      "label": "Nov 2011",
+      "start": "2011-11-01 00:00:00",
+      "end": "2011-11-09 12:50:00"
+    }
+  },
+  "assumptions": [
+    "Revenue = approved CLAUDE.md definition (sheet overlap counted once; C, A, Quantity <= 0, Price <= 0 and non-product codes excluded); exact duplicate lines are kept.",
+    "Like-for-like windows: each window runs from the 1st of its month to the same day and clock time as the last timestamp in the data.",
+    "Order = one revenue invoice; AOV = revenue / orders.",
+    "Customer metrics use revenue rows with a Customer ID only. New customer = no revenue row before the window (data starts 2009-12-01, so the prior-year window has 12 months of look-back, the current window 24).",
+    "Cancellation value = C-invoice lines on product codes; cancellation rate = value / (revenue + value).",
+    "Reversed orders = revenue lines >= \u00a35K matched to a later cancellation of the same product, quantity, price and customer (or a manual M line of equal value), using the retail_analysis.py matcher with no 24h filter. Figures 'excl. reversed' are a sensitivity; headline revenue keeps the approved definition."
+  ],
+  "revenue_filter_audit_all_data": [
+    {
+      "step": "sheet overlap (2010-2011 copy)",
+      "rows_removed": 22523,
+      "value_removed": 377488.45
+    },
+    {
+      "step": "cancellations (C)",
+      "rows_removed": 19165,
+      "value_removed": -1465303.66
+    },
+    {
+      "step": "bad-debt adjustments (A)",
+      "rows_removed": 6,
+      "value_removed": -147614.08
+    },
+    {
+      "step": "Quantity <= 0 or Price <= 0",
+      "rows_removed": 6024,
+      "value_removed": 0.0
+    },
+    {
+      "step": "non-product codes",
+      "rows_removed": 4582,
+      "value_removed": 821725.42
+    }
+  ],
+  "metrics": {
+    "revenue": {
+      "definition": "Approved revenue in the window",
+      "source": "daily.csv",
+      "current": 615493.27,
+      "prior_year": 379727.0,
+      "prior_month": 414699.81,
+      "change_vs_prior_year": 0.6208836084871501,
+      "change_vs_prior_month": 0.4841899011238995
+    },
+    "orders": {
+      "definition": "Distinct revenue invoices",
+      "source": "daily.csv",
+      "current": 816,
+      "prior_year": 766,
+      "prior_month": 718,
+      "change_vs_prior_year": 0.06527415143603132,
+      "change_vs_prior_month": 0.13649025069637877
+    },
+    "aov": {
+      "definition": "Revenue / orders",
+      "source": "daily.csv",
+      "current": 754.281,
+      "prior_year": 495.7272,
+      "prior_month": 577.5763,
+      "change_vs_prior_year": 0.5215647599278885,
+      "change_vs_prior_month": 0.3059416041751959
+    },
+    "units": {
+      "definition": "Sum of Quantity on revenue rows",
+      "source": "daily.csv",
+      "current": 313283,
+      "prior_year": 170424,
+      "prior_month": 213857,
+      "change_vs_prior_year": 0.838256348871051,
+      "change_vs_prior_month": 0.4649181462379066
+    },
+    "trading_days": {
+      "definition": "Days with at least one revenue row",
+      "source": "daily.csv",
+      "current": 8,
+      "prior_year": 8,
+      "prior_month": 8,
+      "change_vs_prior_year": 0.0,
+      "change_vs_prior_month": 0.0
+    },
+    "revenue_per_trading_day": {
+      "definition": "Revenue / trading days",
+      "source": "daily.csv",
+      "current": 76936.6588,
+      "prior_year": 47465.875,
+      "prior_month": 51837.4763,
+      "change_vs_prior_year": 0.6208836084871501,
+      "change_vs_prior_month": 0.4841899011238995
+    },
+    "customers": {
+      "definition": "Distinct Customer IDs with revenue",
+      "source": "customers.csv",
+      "current": 614,
+      "prior_year": 534,
+      "prior_month": 574,
+      "change_vs_prior_year": 0.14981273408239693,
+      "change_vs_prior_month": 0.06968641114982588
+    },
+    "new_customers": {
+      "definition": "Customers whose first revenue row in the whole data falls in the window (look-back differs by year; use new_customers_12m_lookback to compare)",
+      "source": "customers.csv",
+      "current": 28,
+      "prior_year": 45,
+      "prior_month": 58,
+      "change_vs_prior_year": -0.37777777777777777,
+      "change_vs_prior_month": -0.5172413793103448
+    },
+    "new_customers_12m_lookback": {
+      "definition": "Customers with no revenue row in the 12 months before the window (like-for-like 'new')",
+      "source": "customers.csv",
+      "current": 41,
+      "prior_year": 45,
+      "prior_month": 81,
+      "change_vs_prior_year": -0.0888888888888889,
+      "change_vs_prior_month": -0.49382716049382713
+    },
+    "returning_customers_12m_lookback": {
+      "definition": "Customers with a revenue row in the 12 months before the window; customers = new + returning on this basis",
+      "source": "customers.csv",
+      "current": 573,
+      "prior_year": 489,
+      "prior_month": 493,
+      "change_vs_prior_year": 0.17177914110429437,
+      "change_vs_prior_month": 0.16227180527383367
+    },
+    "new_12m_revenue_excl_reversed": {
+      "definition": "Revenue excl. reversed lines from new (12-month look-back) customers",
+      "source": "customers.csv",
+      "current": 26712.46,
+      "prior_year": 12091.26,
+      "prior_month": 30007.91,
+      "change_vs_prior_year": 1.209237085299629,
+      "change_vs_prior_month": -0.10981937762409977
+    },
+    "returning_12m_revenue_excl_reversed": {
+      "definition": "Revenue excl. reversed lines from returning (12-month look-back) customers",
+      "source": "customers.csv",
+      "current": 318048.37,
+      "prior_year": 280324.54,
+      "prior_month": 296459.98,
+      "change_vs_prior_year": 0.1345719857419545,
+      "change_vs_prior_month": 0.07282058779063516
+    },
+    "unidentified_revenue_excl_reversed": {
+      "definition": "Revenue excl. reversed lines with no Customer ID",
+      "source": "daily.csv",
+      "current": 102262.84,
+      "prior_year": 87311.2,
+      "prior_month": 88231.92,
+      "change_vs_prior_year": 0.17124538432640946,
+      "change_vs_prior_month": 0.15902317437952163
+    },
+    "unidentified_share_excl_reversed": {
+      "definition": "Sensitivity: no-Customer-ID revenue / revenue, reversed lines removed",
+      "source": "daily.csv",
+      "current": 0.2288,
+      "prior_year": 0.2299,
+      "prior_month": 0.2128,
+      "change_vs_prior_year_pts": -0.0012,
+      "change_vs_prior_month_pts": 0.016
+    },
+    "new_customer_revenue_share_of_identified": {
+      "definition": "New-customer revenue / identified revenue",
+      "source": "customers.csv",
+      "current": 0.0458,
+      "prior_year": 0.0413,
+      "prior_month": 0.0721,
+      "change_vs_prior_year_pts": 0.0044,
+      "change_vs_prior_month_pts": -0.0263
+    },
+    "revenue_per_customer": {
+      "definition": "Identified revenue / customers",
+      "source": "customers.csv",
+      "current": 835.8802,
+      "prior_year": 547.5951,
+      "prior_month": 568.7594,
+      "change_vs_prior_year": 0.5264565583246614,
+      "change_vs_prior_month": 0.46965517139794777
+    },
+    "unidentified_revenue_share": {
+      "definition": "Revenue with no Customer ID / revenue",
+      "source": "daily.csv",
+      "current": 0.1661,
+      "prior_year": 0.2299,
+      "prior_month": 0.2128,
+      "change_vs_prior_year_pts": -0.0638,
+      "change_vs_prior_month_pts": -0.0466
+    },
+    "top10_customer_share_of_identified": {
+      "definition": "Top 10 customers' revenue / identified revenue",
+      "source": "customers.csv",
+      "current": 0.4707,
+      "prior_year": 0.2532,
+      "prior_month": 0.2342,
+      "change_vs_prior_year_pts": 0.2175,
+      "change_vs_prior_month_pts": 0.2365
+    },
+    "uk_share": {
+      "definition": "United Kingdom revenue / revenue",
+      "source": "countries.csv",
+      "current": 0.9298,
+      "prior_year": 0.9188,
+      "prior_month": 0.9185,
+      "change_vs_prior_year_pts": 0.011,
+      "change_vs_prior_month_pts": 0.0113
+    },
+    "uk_revenue": {
+      "definition": "United Kingdom revenue",
+      "source": "countries.csv",
+      "current": 572282.68,
+      "prior_year": 348894.56,
+      "prior_month": 380887.54,
+      "change_vs_prior_year": 0.6402740128708226,
+      "change_vs_prior_month": 0.5024977713894236
+    },
+    "international_revenue": {
+      "definition": "Revenue outside the United Kingdom",
+      "source": "countries.csv",
+      "current": 43210.59,
+      "prior_year": 30832.44,
+      "prior_month": 33812.27,
+      "change_vs_prior_year": 0.40146514515231346,
+      "change_vs_prior_month": 0.27795590180724283
+    },
+    "uk_revenue_excl_reversed": {
+      "definition": "Sensitivity: United Kingdom revenue with reversed lines removed",
+      "source": "reversals.csv",
+      "current": 403813.08,
+      "prior_year": 348894.56,
+      "prior_month": 380887.54,
+      "change_vs_prior_year": 0.15740721208149555,
+      "change_vs_prior_month": 0.060189787253214
+    },
+    "countries": {
+      "definition": "Countries with revenue",
+      "source": "countries.csv",
+      "current": 18,
+      "prior_year": 18,
+      "prior_month": 16,
+      "change_vs_prior_year": 0.0,
+      "change_vs_prior_month": 0.125
+    },
+    "products_sold": {
+      "definition": "Distinct product codes with revenue",
+      "source": "products.csv",
+      "current": 2464,
+      "prior_year": 2374,
+      "prior_month": 2334,
+      "change_vs_prior_year": 0.03791069924178592,
+      "change_vs_prior_month": 0.055698371893744714
+    },
+    "cancel_value": {
+      "definition": "C-invoice value on product codes (positive \u00a3)",
+      "source": "daily.csv",
+      "current": 174126.76,
+      "prior_year": 5868.15,
+      "prior_month": 9485.74,
+      "change_vs_prior_year": 28.673195129640522,
+      "change_vs_prior_month": 17.356686984884686
+    },
+    "cancel_rate": {
+      "definition": "Cancellation value / (revenue + cancellation value)",
+      "source": "daily.csv",
+      "current": 0.2205,
+      "prior_year": 0.0152,
+      "prior_month": 0.0224,
+      "change_vs_prior_year_pts": 0.2053,
+      "change_vs_prior_month_pts": 0.1982
+    },
+    "revenue_excl_reversed": {
+      "definition": "Sensitivity: revenue minus lines later reversed (reversals.csv)",
+      "source": "reversals.csv",
+      "current": 447023.67,
+      "prior_year": 379727.0,
+      "prior_month": 414699.81,
+      "change_vs_prior_year": 0.17722382132426717,
+      "change_vs_prior_month": 0.07794520089121804
+    },
+    "orders_excl_reversed": {
+      "definition": "Sensitivity: orders with reversed lines removed",
+      "source": "reversals.csv",
+      "current": 815,
+      "prior_year": 766,
+      "prior_month": 718,
+      "change_vs_prior_year": 0.06396866840731064,
+      "change_vs_prior_month": 0.13509749303621166
+    },
+    "aov_excl_reversed": {
+      "definition": "Sensitivity: AOV with reversed lines removed",
+      "source": "reversals.csv",
+      "current": 548.4953,
+      "prior_year": 495.7272,
+      "prior_month": 577.5763,
+      "change_vs_prior_year": 0.10644594740415791,
+      "change_vs_prior_month": -0.050350117497061864
+    },
+    "cancel_value_excl_reversed": {
+      "definition": "Sensitivity: cancellation value minus the cancellations that reversed the lines in reversals.csv",
+      "source": "reversals.csv",
+      "current": 5657.16,
+      "prior_year": 5868.15,
+      "prior_month": 9485.74,
+      "change_vs_prior_year": -0.035955113621839896,
+      "change_vs_prior_month": -0.40361426731072103
+    },
+    "cancel_rate_excl_reversed": {
+      "definition": "Sensitivity: cancellation rate with reversed sales and their cancellations removed",
+      "source": "reversals.csv",
+      "current": 0.0125,
+      "prior_year": 0.0152,
+      "prior_month": 0.0224,
+      "change_vs_prior_year_pts": -0.0027,
+      "change_vs_prior_month_pts": -0.0099
+    },
+    "top10_customer_share_excl_reversed": {
+      "definition": "Sensitivity: top 10 customers' share with reversed lines removed",
+      "source": "customers.csv (revenue_excl_reversed)",
+      "current": 0.2234,
+      "prior_year": 0.2532,
+      "prior_month": 0.2342,
+      "change_vs_prior_year_pts": -0.0298,
+      "change_vs_prior_month_pts": -0.0109
+    }
+  },
+  "reversed_orders_in_windows": [
+    {
+      "window": "current",
+      "invoice": "581483",
+      "date": "2011-12-09 09:15:00",
+      "stock_code": "23843",
+      "description": "PAPER CRAFT , LITTLE BIRDIE",
+      "quantity": 80995,
+      "value": 168469.6,
+      "customer": "16446",
+      "cancel_invoice": "C581484",
+      "hours_to_cancel": 0.2
+    }
+  ]
+}

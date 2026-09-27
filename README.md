@@ -7,7 +7,7 @@ A demo repo for a Claude Code tutorial series for data professionals. It is buil
 Requires Python 3 and Git.
 
 ```bash
-git clone <this repo's URL>
+git clone https://github.com/SaiBysani/online-retail-ai-analyst.git
 cd online-retail-ai-analyst
 
 python3 -m venv .venv

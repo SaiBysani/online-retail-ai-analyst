@@ -15,9 +15,12 @@ source .venv/bin/activate        # Windows: .venv\Scripts\activate
 
 pip install -r requirements.txt
 python scripts/download_data.py
+python scripts/prepare_data.py
 ```
 
 The download script fetches the dataset (about 45 MB) from UCI into `data/raw/` and checks its SHA256. Running it again is safe: it skips the download if the file is already there and correct.
+
+The prepare script converts the Excel workbook (both sheets) into one CSV, `data/processed/online_retail_II.csv`, so later analysis doesn't have to re-read the slow 1M-row workbook every time. It is a straight format conversion: no cleaning, no rows dropped. It takes about a minute, and running it again skips the work if the CSV is already up to date (add `--force` to rebuild).
 
 ## Folder layout
 
@@ -27,7 +30,9 @@ online-retail-ai-analyst/
 ├── requirements.txt          Python packages (pandas, openpyxl, matplotlib)
 ├── data/
 │   ├── README.md             dataset source, license, citation, checksum
-│   └── raw/                  original dataset, never modified (gitignored)
+│   ├── raw/                  original dataset, never modified (gitignored)
+│   └── processed/            generated CSV, not committed (gitignored)
 └── scripts/
-    └── download_data.py      downloads and verifies the dataset
+    ├── download_data.py      downloads and verifies the dataset
+    └── prepare_data.py       converts the workbook to one CSV (run once)
 ```

@@ -29,3 +29,5 @@ To get it, run:
 ```bash
 python scripts/download_data.py
 ```
+
+`data/processed/online_retail_II.csv` is generated from the raw workbook by `python scripts/prepare_data.py` (both sheets stacked, plus a `source_sheet` column, no cleaning); it is not committed either.

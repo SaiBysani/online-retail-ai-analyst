@@ -2,6 +2,15 @@
 
 Analysis project on the UCI Online Retail II dataset: invoice line items from a UK online retailer, 2009-12-01 to 2011-12-09. Currency is GBP.
 
+## Operating model
+
+For every request, pick one mode before doing anything, and say which one:
+
+- **Answer:** the request is clear, uses the approved definitions and data below, and changes nothing outside `outputs/`; do it, state assumptions, cite the evidence.
+- **Clarify:** an ambiguity would change the number (undefined metric, period, segment, currency, or a definition that conflicts with this file); ask one targeted question before calculating.
+- **Review:** the result will go to leadership or another reader, changes a business definition, or disputes an existing number; do the work, then pass it to the `reviewer` agent before calling it done.
+- **Stop:** the request would break a rule here (touch `data/raw/`, count cancellations or adjustments as revenue, push without approval) or the data cannot support it; decline, say why, and say what would unblock it.
+
 ## Data
 
 - `data/raw/online_retail_II.xlsx`: the original download. Read-only.
@@ -22,6 +31,8 @@ Analysis project on the UCI Online Retail II dataset: invoice line items from a 
 - **Revenue (approved definition):** Quantity x Price, summed over rows that are not cancellations or bad-debt adjustments, have Quantity > 0 and Price > 0, are not non-product codes, and are counted once across the sheet overlap.
 
 ## Rules
+
+The raw-data, delete, push and `outputs/` rules are also enforced by permission rules in `.claude/settings.json`.
 
 - Never modify anything in `data/raw/`.
 - Treat invoices beginning with C as cancellations; don't count them as completed revenue.

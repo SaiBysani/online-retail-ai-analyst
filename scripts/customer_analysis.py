@@ -482,7 +482,7 @@ def main():
                                      "Default row of the sensitivity grid", "at_risk_sensitivity.csv"),
         },
     }
-    (out / "customer_metrics.json").write_text(json.dumps(metrics, indent=2, default=str))
+    (out / "customer_metrics.json").write_text(json.dumps(metrics, indent=2, default=str), encoding="utf-8")
 
     print(f"Identified revenue £{ident:,.0f} of £{total:,.0f} ({1 - ident / total:.1%} without Customer ID); "
           f"{len(c):,} customers; {len(rev_idx):,} reversed lines £{c.reversed_value.sum():,.0f}")

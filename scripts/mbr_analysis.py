@@ -403,7 +403,7 @@ def main():
          "description": r.Description, "quantity": int(r.Quantity), "value": round(float(r.line_value), 2),
          "customer": r["Customer ID"], "cancel_invoice": r.Invoice_cancel,
          "hours_to_cancel": round(float(r.hours_to_cancel), 2)} for _, r in rev_windows.iterrows()]
-    (out / "metrics.json").write_text(json.dumps(result, indent=2, default=str))
+    (out / "metrics.json").write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
 
     charts(out, daily, trend, products, countries, labels["current"], labels["prior_year"],
            metrics["current"]["revenue"], metrics["current"]["revenue_excl_reversed"])

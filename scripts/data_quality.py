@@ -409,9 +409,9 @@ def write(out_dir):
     ]
     for i, c in enumerate(checks, 1):
         parts += [f"## {i}. {c['title']} ({c['status']})", "", c["body"], ""]
-    (out_dir / "data_quality_report.md").write_text("\n".join(parts))
+    (out_dir / "data_quality_report.md").write_text("\n".join(parts), encoding="utf-8")
     (out_dir / "data_quality_checks.json").write_text(json.dumps(
-        [{k: v for k, v in c.items() if k != "body"} for c in checks], indent=2, default=str))
+        [{k: v for k, v in c.items() if k != "body"} for c in checks], indent=2, default=str), encoding="utf-8")
     print(md_table(summary, index=False))
     print(f"\nwrote {out_dir / 'data_quality_report.md'}\nwrote {out_dir / 'data_quality_checks.json'}")
 

@@ -409,7 +409,7 @@ def main():
             **sensitivity,
         },
     }
-    (out / "metrics.json").write_text(json.dumps(metrics, indent=2, default=str))
+    (out / "metrics.json").write_text(json.dumps(metrics, indent=2, default=str), encoding="utf-8")
 
     print(f"Revenue £{total:,.0f} | FY1 £{fy_rev.FY1:,.0f} | FY2 £{fy_rev.FY2:,.0f} "
           f"({change(fy_rev.FY1, fy_rev.FY2):+.1%})")

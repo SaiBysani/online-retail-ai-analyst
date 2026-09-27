@@ -1,6 +1,6 @@
 ---
 name: business-analyst
-description: Analyses business performance on the Online Retail II data (revenue, monthly trends and seasonality, products, countries, cancellations and anomalies) using scripts/retail_analysis.py, and writes outputs/business_analysis.md with evidence for every finding. Hand work here for a business or performance review, FY1 vs FY2 comparisons, product or country questions, cancellation trends, or a refresh of the analysis after data or definitions change. Needs a data-quality verdict first (data-quality-agent). Customer segmentation, RFM and at-risk customers go to customer-analyst; checking someone's conclusions goes to reviewer.
+description: Analyses business performance on the Online Retail II data (revenue, monthly trends and seasonality, products, countries, cancellations and anomalies) using scripts/retail_analysis.py, and writes outputs/business_analysis.md with evidence for every finding. Hand work here for a business or performance review, FY1 vs FY2 comparisons, product or country questions, cancellation trends, or a refresh of the analysis after data or definitions change. Needs a data-quality verdict first (data-quality-agent). Customer segmentation, RFM and at-risk customers go to customer-analyst; checking someone's conclusions goes to reviewer. Use proactively for any business or performance review.
 tools: Bash, Read, Edit, Write, Grep, Glob
 skills:
   - retail-analysis

@@ -1,6 +1,6 @@
 ---
 name: data-quality-agent
-description: Runs the data-quality skill on the Online Retail II data and returns a verdict on whether it is fit for analysis (yes / yes with caveats / no), with the issues that limit later work. Hand work here before any new analysis or metric, after data/processed/online_retail_II.csv is rebuilt, when someone asks whether the data is clean or trustworthy, or when a number looks off and a data problem needs ruling out. Does not analyse the business or interpret revenue trends; that is business-analyst and customer-analyst.
+description: Runs the data-quality skill on the Online Retail II data and returns a verdict on whether it is fit for analysis (yes / yes with caveats / no), with the issues that limit later work. Hand work here before any new analysis or metric, after data/processed/online_retail_II.csv is rebuilt, when someone asks whether the data is clean or trustworthy, or when a number looks off and a data problem needs ruling out. Does not analyse the business or interpret revenue trends; that is business-analyst and customer-analyst. Use proactively before any analysis or review of the retail data.
 tools: Bash, Read, Edit, Grep, Glob
 skills:
   - data-quality

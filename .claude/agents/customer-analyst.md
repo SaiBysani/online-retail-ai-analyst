@@ -1,6 +1,6 @@
 ---
 name: customer-analyst
-description: Segments Online Retail II customers RFM-style (recency, frequency, monetary value), identifies high-value customers at risk of lapsing, and analyses repeat-purchase behaviour (repeat rate, time between purchases, what separates one-off from repeat buyers). Writes outputs/customer_analysis.md backed by scripts/customer_analysis.py. Hand work here for customer segments, churn or win-back lists, customer lifetime value, loyalty or retention questions at the customer level. Needs a data-quality verdict first (data-quality-agent). Overall revenue, product, country and cancellation trends go to business-analyst.
+description: Segments Online Retail II customers RFM-style (recency, frequency, monetary value), identifies high-value customers at risk of lapsing, and analyses repeat-purchase behaviour (repeat rate, time between purchases, what separates one-off from repeat buyers). Writes outputs/customer_analysis.md backed by scripts/customer_analysis.py. Hand work here for customer segments, churn or win-back lists, customer lifetime value, loyalty or retention questions at the customer level. Needs a data-quality verdict first (data-quality-agent). Overall revenue, product, country and cancellation trends go to business-analyst. Use proactively whenever a review covers customers.
 tools: Bash, Read, Edit, Write, Grep, Glob
 ---
 
